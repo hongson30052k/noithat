@@ -1,0 +1,33 @@
+.sidebar {
+  margin-top: 50px;
+  width: 312px;
+  background-color: #ffffff;
+  border: 1px solid #d9d9d9;
+}
+.menu {
+  display: flex;
+  align-items: center;
+  background-color: #d9d9d9;
+  cursor: pointer;
+  .btn-menu-item {
+    padding: 20px;
+    padding-left: 20px;
+    width: 100%;
+  }
+}
+.sub-menu {
+  gap: 10px;
+  .sub-menu-item {
+    padding: 10px;
+    .sub-menu-item-name {
+      width: 312px;
+      padding-left: 20px;
+      width: 100%;
+    }
+  }
+}
+
+/* Menu */
+/* Categories */
+
+/* Gray Scale/White */

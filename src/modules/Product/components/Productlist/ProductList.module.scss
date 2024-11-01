@@ -1,0 +1,124 @@
+.product-list {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 300px;
+  gap: 30px;
+
+  .product-list-img2 {
+    width: 500px;
+    height: 500px;
+  }
+  .product-list-info {
+    .text-title {
+      font-family: "Poppins";
+      font-style: normal;
+      font-weight: 400;
+      font-size: 42px;
+      line-height: 63px;
+      color: #000000;
+    }
+    .text-price {
+      display: block;
+      font-family: "Poppins";
+      font-style: normal;
+      font-weight: 500;
+      font-size: 24px;
+      line-height: 36px;
+      color: #9f9f9f;
+    }
+    .text-muted {
+      font-family: "Poppins";
+      font-style: normal;
+      font-weight: 400;
+      font-size: 19px;
+      line-height: 20px;
+      color: #000000;
+      margin: 30px 0px;
+    }
+    .text-size {
+      display: block;
+      font-family: "Poppins";
+      font-style: normal;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 21px;
+      color: #9f9f9f;
+      margin-top: 15px;
+    }
+    .size-list {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      span {
+        text-align: center;
+        width: 24px;
+        height: 24px;
+        background-color: #9f9f9f;
+      }
+    }
+    .text-color {
+      margin-top: 20px;
+      display: block;
+      font-family: "Poppins";
+      font-style: normal;
+      font-weight: 400;
+      font-size: 18px;
+      line-height: 21px;
+      color: #9f9f9f;
+    }
+    .color-list {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      div {
+        width: 30px;
+        height: 30px;
+        background: #816dfa;
+        border-radius: 50px;
+      }
+    }
+    .product-list-button {
+      margin-top: 50px;
+      display: flex;
+      gap: 20px;
+      .product-list-quantity {
+        display: flex;
+        box-sizing: border-box;
+        width: 123px;
+        height: 64px;
+        background: #ffffff;
+        border: 1px solid #9f9f9f;
+        border-radius: 10px;
+        justify-content: space-around;
+        align-items: center;
+      }
+      .btn-add {
+        width: 215px;
+        height: 64px;
+        font-family: "Poppins";
+        font-style: normal;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 30px;
+        color: #000000;
+      }
+    }
+    .border-style {
+      border: 1px solid #9f9f9f;
+      margin-top: 50px;
+    }
+  }
+}
+
+.product-list-img {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 300px;
+  gap: 20px;
+  width: 500px;
+  img {
+    width: 76px;
+    height: 80px;
+  }
+}
