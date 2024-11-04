@@ -4,19 +4,18 @@ import styles from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
 import { TextField, Button, Container, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import {
-  fetchGetUser,
-  getIdUser,
-  loginUser,
-} from "../../../../store/slices/UserSlice";
+import { useEffect } from "react";
+import { fetchGetUser, loginUser } from "../../../../store/slices/UserSlice";
 import { RootState } from "../../../../store/store";
-import WithAuth from "../../../../hoc/WithAuth";
-import { Link, NavLink } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
 
 const LoginForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.userState.isAuthenticated
+  )
   const loginStatus = useSelector((state: RootState) => state.userState.status);
   const loginError = useSelector((state: RootState) => state.userState.error);
   console.log(loginError, "error");
@@ -37,27 +36,27 @@ const LoginForm = () => {
   });
 
   const handleSubmit = (values: any) => {
-    const value = {
-      username: values.username,
-      password: values.password,
-      isAuthenticated: true,
-    };
-
-    dispatch(loginUser(value));
+    dispatch(loginUser(values));
+    if (isAuthenticated) {
+      navigate("/");
+    } else {
+      console.log(loginError);
+    }
   };
+
   return (
     <>
       <div className={cx("form-container")}>
         <Container className={cx("sign-up-form")}>
-          <Link to="/" className={cx("form-bg")}>
-            Quay lại
-          </Link>
+        <Link to="/" className={cx("link")}>
+          Quay lại
+        </Link>
           <Typography
             variant="h4"
             component="h4"
             fontWeight="bold"
             color="#131118"
-            sx={{ fontSize: "40px", mb: 2 }}
+            sx={{ fontSize: "40px", }}
           >
             Welcome 👋
           </Typography>
@@ -65,7 +64,7 @@ const LoginForm = () => {
             variant="subtitle1"
             component="p"
             sx={{
-              mb: 2,
+              
               fontFamily: "Jost",
               fontStyle: "normal",
               fontWeight: "400",
@@ -94,11 +93,11 @@ const LoginForm = () => {
                   sx={{
                     fontFamily: "Jost",
                     fontStyle: "normal",
-                    fontWeight: "400",
-                    fontSize: "16px",
-                    lineHeight: "17px",
+                    fontWeight: "600",
+                    fontSize: "20px",
+                    lineHeight: "20px",
                     color: "#131118",
-                    mb: 1,
+                    mt: 2,
                   }}
                 >
                   Username
@@ -116,7 +115,7 @@ const LoginForm = () => {
                   helperText={touched.username && errors.username}
                   slotProps={{
                     input: {
-                      style: { fontSize: "16px" },
+                      style: { fontSize: "16px", marginBottom: "10px" },  
                     },
                     inputLabel: {
                       style: {
@@ -134,16 +133,16 @@ const LoginForm = () => {
                     },
                   }}
                 />
-
+  
                 <Typography
                   sx={{
                     fontFamily: "Jost",
                     fontStyle: "normal",
-                    fontWeight: "400",
-                    fontSize: "16px",
-                    lineHeight: "17px",
+                    fontWeight: "600",
+                    fontSize: "20px",
+                    lineHeight: "20px",
                     color: "#131118",
-                    mb: 1,
+               
                   }}
                 >
                   Password
@@ -180,7 +179,7 @@ const LoginForm = () => {
                     },
                   }}
                 />
-
+  
                 <Button
                   type="submit"
                   variant="contained"
@@ -196,19 +195,14 @@ const LoginForm = () => {
                     color: "#FFFFFF",
                   }}
                 >
-                  {loginStatus === "loading"
-                    ? "Đang đăng nhập..."
-                    : "Đăng nhập"}
+                  {loginStatus === "loading" ? "Đang đăng nhập..." : "Đăng nhập"}
                 </Button>
-                {loginError === "error" ? (
+                {loginError ? (
                   <p className={cx("error-message")} style={{ color: "red" }}>
                     {loginError}
                   </p>
                 ) : null}
-                <span className={cx("register")}>
-                  Don't have an account?{" "}
-                  <NavLink to="/signup">Register</NavLink>
-                </span>
+                <div className={cx("register")}>If you don't have an account? <Link className={cx("register-link")} to="/signup">Register</Link></div>
               </form>
             )}
           </Formik>
@@ -218,4 +212,4 @@ const LoginForm = () => {
   );
 };
 
-export default WithAuth(LoginForm);
+export default LoginForm;

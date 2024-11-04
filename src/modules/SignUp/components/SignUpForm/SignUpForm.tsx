@@ -57,24 +57,9 @@ const SignUpForm = () => {
           component="h4"
           fontWeight="bold"
           color="#131118"
-          sx={{ fontSize: "40px", mb: 2 }}
+          sx={{ fontSize: "40px", marginTop: "30px" }}
         >
           Create New Account
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          component="p"
-          sx={{
-            mb: 2,
-            fontFamily: "Jost",
-            fontStyle: "normal",
-            fontWeight: "400",
-            fontSize: "16px",
-            lineHeight: "23px",
-            color: "#A4A2AA",
-          }}
-        >
-          Sign up to see photos and videos from your friends.
         </Typography>
         <Formik
           initialValues={initialValues}
@@ -94,11 +79,11 @@ const SignUpForm = () => {
                 sx={{
                   fontFamily: "Jost",
                   fontStyle: "normal",
-                  fontWeight: "400",
-                  fontSize: "16px",
+                  fontWeight: "600",
+                  fontSize: "20px",
                   lineHeight: "17px",
                   color: "#131118",
-                  mb: 1,
+                  mt: 2
                 }}
               >
                 Username
@@ -121,7 +106,6 @@ const SignUpForm = () => {
                   inputLabel: {
                     style: {
                       fontSize: "18px",
-                      transform: "translate(14px, 12px) scale(1)",
                       fontFamily: "Jost",
                       fontStyle: "normal",
                       fontWeight: "400",
@@ -130,7 +114,7 @@ const SignUpForm = () => {
                     },
                   },
                   formHelperText: {
-                    style: { fontSize: "16px", marginBottom: "10px" },
+                    style: { fontSize: "16px", },
                   },
                 }}
               />
@@ -174,7 +158,7 @@ const SignUpForm = () => {
                     },
                   },
                   formHelperText: {
-                    style: { fontSize: "16px", marginBottom: "10px" },
+                    style: { fontSize: "16px"},
                   },
                 }}
               />
@@ -218,7 +202,7 @@ const SignUpForm = () => {
                     },
                   },
                   formHelperText: {
-                    style: { fontSize: "16px", marginBottom: "10px" },
+                    style: { fontSize: "16px"},
                   },
                 }}
               />
@@ -264,7 +248,7 @@ const SignUpForm = () => {
                     },
                   },
                   formHelperText: {
-                    style: { fontSize: "16px", marginBottom: "10px" },
+                    style: { fontSize: "16px",},
                   },
                 }}
               />
@@ -333,9 +317,9 @@ const SignUpForm = () => {
                 Sign Up
               </Button>
 
-              <span className={cx("span")}>
-                Already have an account?<NavLink to="/login"> Login</NavLink>
-              </span>
+              <div className={cx("register")}>
+                Already have an account?<NavLink to="/login" className={cx("register-link")}>Login</NavLink>
+              </div>
             </form>
           )}
         </Formik>

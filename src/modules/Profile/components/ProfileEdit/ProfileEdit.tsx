@@ -14,20 +14,20 @@ const ProfileEdit = () => {
 
   return (
     <div>
-      <form action="">
+      <form action="" className={cx("form-profile")}>
         {user1.map((item: any) => {
           return (
             <>
-              <label htmlFor="">name</label>
-              <input type="text" value={item.myname} />
+              <label htmlFor="" className={cx("label-profile")}>name</label>
+              <input type="text" value={item.myname} className={cx("input-profile")}/>
             </>
           );
         })}
-        <label htmlFor="">phone</label>
-        <input type="text" value={user2.phone} />
+        <label htmlFor="" className={cx("label-profile")}>phone</label>
+        <input type="text" value={user2.phone} className={cx("input-profile")} />
 
-        <label htmlFor="">Address</label>
-        <input type="text" value={user2.address} />
+        <label htmlFor="" className={cx("label-profile")}>Address</label>
+        <input type="text" value={user2.address} className={cx("input-profile")} />
       </form>
     </div>
   );

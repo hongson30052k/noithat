@@ -48,8 +48,9 @@ export const loginUser = createAsyncThunk(
     const user = users.find(
       (user: any) => user.username === username && user.password === password
     );
+
     if (!user) {
-      return rejectWithValue("tên đăng nhập hoặc mật khẩu không đúng");
+      return rejectWithValue("Tên đăng nhập hoặc mật khẩu không đúng");
     }
     console.log(user, "user");
     return user;
@@ -96,7 +97,7 @@ export const UserSlice = createSlice({
     builder.addCase(
       loginUser.fulfilled,
       (state, action: PayloadAction<any>) => {
-        state.status = "success";
+        state.status = "success";    
         state.isAuthenticated = true;
         state.isAdmin = action.payload.isAdmin;
         state.idUser = action.payload.id;
