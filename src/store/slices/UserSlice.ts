@@ -65,6 +65,9 @@ export const UserSlice = createSlice({
       state.users = action.payload;
     },
     getIdUser: (state = initialState, action: PayloadAction<any>) => {},
+    setError: (state = initialState) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchCreateUser.pending, (state, action) => {});
@@ -112,5 +115,5 @@ export const UserSlice = createSlice({
   },
 });
 
-export const { getUser, getIdUser } = UserSlice.actions;
+export const { getUser, getIdUser, setError } = UserSlice.actions;
 export default UserSlice.reducer;

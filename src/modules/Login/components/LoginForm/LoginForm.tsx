@@ -5,7 +5,7 @@ import classNames from "classnames/bind";
 import { TextField, Button, Container, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { fetchGetUser, loginUser } from "../../../../store/slices/UserSlice";
+import { fetchGetUser, loginUser, setError } from "../../../../store/slices/UserSlice";
 import { RootState } from "../../../../store/store";
 import { Link, useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
@@ -43,6 +43,10 @@ const LoginForm = () => {
       console.log(loginError);
     }
   };
+
+  const onClearError = () => {
+    dispatch(setError())
+  }
 
   return (
     <>
@@ -113,6 +117,7 @@ const LoginForm = () => {
                   value={values.username}
                   error={touched.username && Boolean(errors.username)}
                   helperText={touched.username && errors.username}
+                  onFocus={onClearError}
                   slotProps={{
                     input: {
                       style: { fontSize: "16px", marginBottom: "10px" },  
@@ -156,6 +161,7 @@ const LoginForm = () => {
                   variant="outlined"
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  onFocus={onClearError}
                   value={values.password}
                   error={touched.password && Boolean(errors.password)}
                   helperText={touched.password && errors.password}
