@@ -6,7 +6,7 @@ import { TextField, Button, Container, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCreateUser } from "../../../../store/slices/UserSlice";
 import { RootState } from "../../../../store/store";
-import { useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
 
 const SignUpForm = () => {
@@ -17,11 +17,15 @@ const SignUpForm = () => {
   );
   const initialValues = {
     username: "",
+    phone: "",
+    address: "",
     password: "",
     confirmPassword: "",
   };
   const validationSchema = Yup.object().shape({
     username: Yup.string().required("Username is required"),
+    phone: Yup.string().required("Phone is required"),
+    address: Yup.string().required("Address is required"),
     password: Yup.string()
       .required("Password is required")
       .min(6, "Password must be at least 6 characters long"),
@@ -31,12 +35,22 @@ const SignUpForm = () => {
   });
 
   const handleSubmit = (values: any) => {
-    dispatch(fetchCreateUser(values));
-    navigate("/login");
+    const value: any = {
+      username: values.username,
+      phone: values.phone,
+      address: values.address,
+      password: values.password,
+      isAdmin: false,
+    };
+    dispatch(fetchCreateUser(value));
+    navigate("/userLogin");
   };
 
   return (
     <div className={cx("sign-up-form-container")}>
+      <Link to="/" className={cx("link")}>
+        Quay lại
+      </Link>
       <Container className={cx("sign-up-form")}>
         <Typography
           variant="h4"
@@ -100,6 +114,94 @@ const SignUpForm = () => {
                 value={values.username}
                 error={touched.username && Boolean(errors.username)}
                 helperText={touched.username && errors.username}
+                slotProps={{
+                  input: {
+                    style: { fontSize: "16px" },
+                  },
+                  inputLabel: {
+                    style: {
+                      fontSize: "18px",
+                      transform: "translate(14px, 12px) scale(1)",
+                      fontFamily: "Jost",
+                      fontStyle: "normal",
+                      fontWeight: "400",
+                      lineHeight: "17px",
+                      color: "#131118",
+                    },
+                  },
+                  formHelperText: {
+                    style: { fontSize: "16px", marginBottom: "10px" },
+                  },
+                }}
+              />
+              <Typography
+                sx={{
+                  fontFamily: "Jost",
+                  fontStyle: "normal",
+                  fontWeight: "400",
+                  fontSize: "16px",
+                  lineHeight: "17px",
+                  color: "#131118",
+                  mb: 1,
+                }}
+              >
+                Phone
+              </Typography>
+              <TextField
+                fullWidth
+                className={cx("input")}
+                id="phone"
+                name="phone"
+                variant="outlined"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.phone}
+                error={touched.phone && Boolean(errors.phone)}
+                helperText={touched.phone && errors.phone}
+                slotProps={{
+                  input: {
+                    style: { fontSize: "16px" },
+                  },
+                  inputLabel: {
+                    style: {
+                      fontSize: "18px",
+                      transform: "translate(14px, 12px) scale(1)",
+                      fontFamily: "Jost",
+                      fontStyle: "normal",
+                      fontWeight: "400",
+                      lineHeight: "17px",
+                      color: "#131118",
+                    },
+                  },
+                  formHelperText: {
+                    style: { fontSize: "16px", marginBottom: "10px" },
+                  },
+                }}
+              />
+              <Typography
+                sx={{
+                  fontFamily: "Jost",
+                  fontStyle: "normal",
+                  fontWeight: "400",
+                  fontSize: "16px",
+                  lineHeight: "17px",
+                  color: "#131118",
+                  mb: 1,
+                }}
+              >
+                Address
+              </Typography>
+              <TextField
+                fullWidth
+                className={cx("input")}
+                id="address"
+                name="address"
+                variant="outlined"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.address}
+                error={touched.address && Boolean(errors.address)}
+                helperText={touched.address && errors.address}
                 slotProps={{
                   input: {
                     style: { fontSize: "16px" },
@@ -230,6 +332,10 @@ const SignUpForm = () => {
               >
                 Sign Up
               </Button>
+
+              <span className={cx("span")}>
+                Already have an account?<NavLink to="/login"> Login</NavLink>
+              </span>
             </form>
           )}
         </Formik>

@@ -4,9 +4,15 @@ import styles from "./LoginForm.module.scss";
 import classNames from "classnames/bind";
 import { TextField, Button, Container, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { fetchGetUser, loginUser } from "../../../../store/slices/UserSlice";
+import { useEffect, useState } from "react";
+import {
+  fetchGetUser,
+  getIdUser,
+  loginUser,
+} from "../../../../store/slices/UserSlice";
 import { RootState } from "../../../../store/store";
+import WithAuth from "../../../../hoc/WithAuth";
+import { Link, NavLink } from "react-router-dom";
 const cx = classNames.bind(styles);
 
 const LoginForm = () => {
@@ -31,169 +37,185 @@ const LoginForm = () => {
   });
 
   const handleSubmit = (values: any) => {
-    dispatch(loginUser(values));
+    const value = {
+      username: values.username,
+      password: values.password,
+      isAuthenticated: true,
+    };
+
+    dispatch(loginUser(value));
   };
-
   return (
-    <div className={cx("form-container")}>
-      <Container className={cx("sign-up-form")}>
-        <Typography
-          variant="h4"
-          component="h4"
-          fontWeight="bold"
-          color="#131118"
-          sx={{ fontSize: "40px", mb: 2 }}
-        >
-          Welcome 👋
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          component="p"
-          sx={{
-            mb: 2,
-            fontFamily: "Jost",
-            fontStyle: "normal",
-            fontWeight: "400",
-            fontSize: "16px",
-            lineHeight: "23px",
-            color: "#A4A2AA",
-          }}
-        >
-          Please login here
-        </Typography>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({
-            handleSubmit,
-            handleChange,
-            handleBlur,
-            values,
-            errors,
-            touched,
-          }) => (
-            <form onSubmit={handleSubmit} className={cx("form")}>
-              <Typography
-                sx={{
-                  fontFamily: "Jost",
-                  fontStyle: "normal",
-                  fontWeight: "400",
-                  fontSize: "16px",
-                  lineHeight: "17px",
-                  color: "#131118",
-                  mb: 1,
-                }}
-              >
-                Username
-              </Typography>
-              <TextField
-                fullWidth
-                className={cx("input")}
-                id="username"
-                name="username"
-                variant="outlined"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.username}
-                error={touched.username && Boolean(errors.username)}
-                helperText={touched.username && errors.username}
-                slotProps={{
-                  input: {
-                    style: { fontSize: "16px" },
-                  },
-                  inputLabel: {
-                    style: {
-                      fontSize: "18px",
-                      transform: "translate(14px, 12px) scale(1)",
-                      fontFamily: "Jost",
-                      fontStyle: "normal",
-                      fontWeight: "400",
-                      lineHeight: "17px",
-                      color: "#131118",
+    <>
+      <div className={cx("form-container")}>
+        <Container className={cx("sign-up-form")}>
+          <Link to="/" className={cx("form-bg")}>
+            Quay lại
+          </Link>
+          <Typography
+            variant="h4"
+            component="h4"
+            fontWeight="bold"
+            color="#131118"
+            sx={{ fontSize: "40px", mb: 2 }}
+          >
+            Welcome 👋
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            component="p"
+            sx={{
+              mb: 2,
+              fontFamily: "Jost",
+              fontStyle: "normal",
+              fontWeight: "400",
+              fontSize: "16px",
+              lineHeight: "23px",
+              color: "#A4A2AA",
+            }}
+          >
+            Please login here
+          </Typography>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({
+              handleSubmit,
+              handleChange,
+              handleBlur,
+              values,
+              errors,
+              touched,
+            }) => (
+              <form onSubmit={handleSubmit} className={cx("form")}>
+                <Typography
+                  sx={{
+                    fontFamily: "Jost",
+                    fontStyle: "normal",
+                    fontWeight: "400",
+                    fontSize: "16px",
+                    lineHeight: "17px",
+                    color: "#131118",
+                    mb: 1,
+                  }}
+                >
+                  Username
+                </Typography>
+                <TextField
+                  fullWidth
+                  className={cx("input")}
+                  id="username"
+                  name="username"
+                  variant="outlined"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.username}
+                  error={touched.username && Boolean(errors.username)}
+                  helperText={touched.username && errors.username}
+                  slotProps={{
+                    input: {
+                      style: { fontSize: "16px" },
                     },
-                  },
-                  formHelperText: {
-                    style: { fontSize: "16px", marginBottom: "10px" },
-                  },
-                }}
-              />
-
-              <Typography
-                sx={{
-                  fontFamily: "Jost",
-                  fontStyle: "normal",
-                  fontWeight: "400",
-                  fontSize: "16px",
-                  lineHeight: "17px",
-                  color: "#131118",
-                  mb: 1,
-                }}
-              >
-                Password
-              </Typography>
-              <TextField
-                fullWidth
-                className={cx("input")}
-                id="password"
-                name="password"
-                type="password"
-                variant="outlined"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.password}
-                error={touched.password && Boolean(errors.password)}
-                helperText={touched.password && errors.password}
-                slotProps={{
-                  input: {
-                    style: { fontSize: "16px" },
-                  },
-                  inputLabel: {
-                    style: {
-                      fontSize: "18px",
-                      transform: "translate(14px, 12px) scale(1)",
-                      fontFamily: "Jost",
-                      fontStyle: "normal",
-                      fontWeight: "400",
-                      lineHeight: "17px",
-                      color: "#131118",
+                    inputLabel: {
+                      style: {
+                        fontSize: "18px",
+                        transform: "translate(14px, 12px) scale(1)",
+                        fontFamily: "Jost",
+                        fontStyle: "normal",
+                        fontWeight: "400",
+                        lineHeight: "17px",
+                        color: "#131118",
+                      },
                     },
-                  },
-                  formHelperText: {
-                    style: { fontSize: "16px", marginBottom: "10px" },
-                  },
-                }}
-              />
+                    formHelperText: {
+                      style: { fontSize: "16px", marginBottom: "10px" },
+                    },
+                  }}
+                />
 
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                disabled={loginStatus === "loading"}
-                className={cx("btn-submit")}
-                sx={{
-                  fontFamily: "Jost",
-                  fontStyle: "normal",
-                  fontWeight: "400",
-                  fontSize: "16px",
-                  lineHeight: "17px",
-                  color: "#FFFFFF",
-                }}
-              >
-                {loginStatus === "loading" ? "Đang đăng nhập..." : "Đăng nhập"}
-              </Button>
-              {loginError === "error" ? (
-                <p className={cx("error-message")} style={{ color: "red" }}>
-                  {loginError}
-                </p>
-              ) : null}
-            </form>
-          )}
-        </Formik>
-      </Container>
-    </div>
+                <Typography
+                  sx={{
+                    fontFamily: "Jost",
+                    fontStyle: "normal",
+                    fontWeight: "400",
+                    fontSize: "16px",
+                    lineHeight: "17px",
+                    color: "#131118",
+                    mb: 1,
+                  }}
+                >
+                  Password
+                </Typography>
+                <TextField
+                  fullWidth
+                  className={cx("input")}
+                  id="password"
+                  name="password"
+                  type="password"
+                  variant="outlined"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.password}
+                  error={touched.password && Boolean(errors.password)}
+                  helperText={touched.password && errors.password}
+                  slotProps={{
+                    input: {
+                      style: { fontSize: "16px" },
+                    },
+                    inputLabel: {
+                      style: {
+                        fontSize: "18px",
+                        transform: "translate(14px, 12px) scale(1)",
+                        fontFamily: "Jost",
+                        fontStyle: "normal",
+                        fontWeight: "400",
+                        lineHeight: "17px",
+                        color: "#131118",
+                      },
+                    },
+                    formHelperText: {
+                      style: { fontSize: "16px", marginBottom: "10px" },
+                    },
+                  }}
+                />
+
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                  disabled={loginStatus === "loading"}
+                  className={cx("btn-submit")}
+                  sx={{
+                    fontFamily: "Jost",
+                    fontStyle: "normal",
+                    fontWeight: "400",
+                    fontSize: "16px",
+                    lineHeight: "17px",
+                    color: "#FFFFFF",
+                  }}
+                >
+                  {loginStatus === "loading"
+                    ? "Đang đăng nhập..."
+                    : "Đăng nhập"}
+                </Button>
+                {loginError === "error" ? (
+                  <p className={cx("error-message")} style={{ color: "red" }}>
+                    {loginError}
+                  </p>
+                ) : null}
+                <span className={cx("register")}>
+                  Don't have an account?{" "}
+                  <NavLink to="/signup">Register</NavLink>
+                </span>
+              </form>
+            )}
+          </Formik>
+        </Container>
+      </div>
+    </>
   );
 };
 
-export default LoginForm;
+export default WithAuth(LoginForm);

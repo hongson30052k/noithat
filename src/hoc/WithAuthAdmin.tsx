@@ -1,32 +1,25 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { RootState } from "../store/store";
 
-/**
- * xử lý chỗ này:
- * Kiểm tra nếu như là user thì mình mới cho vào trang , còn ko thì mình sẽ chuyển sang trang nào đó bất kì
- */
-const WithAuthAdmin = <P extends object>(
-  Component: React.ComponentType<P>
-): React.FC<P> => {
-  return (props: P) => {
-    /** Lấy thông tin từ localStorage ra xem thử đã có thông tin hay chưa */
-    // const user = localStorage.getItem("user");
-    // const parsedUser = user ? JSON.parse(user) : null;
+const WithAuthAdmin = (WrappedComponent: React.FC) => {
+  const AuthHOC: React.FC<any> = (props) => {
+    const navigate = useNavigate();
+    const { isAdmin } = useSelector((state: RootState) => state.userState);
 
-    /**
-     * Thứ 1:Kiểm tra user có nằm trong trong localStorage
-     * Thứ 2:Kiểm tra xem user đó nếu có thì cái role của nó có phải là admin hay ko,
-     * Rơi vào 1 trong 2 điều kiện trên thì chuyển về trang hom
-     */
+    useEffect(() => {
+      if (!isAdmin) {
+        navigate("/login");
+      } else {
+        navigate("/admin");
+      }
+    }, [isAdmin, navigate]);
 
-    // const noUser = !parsedUser;
-    // const hasUserButNotAdmin = parsedUser && parsedUser.isAdmin === false;
-    // if (noUser || hasUserButNotAdmin) {
-    //   return <Navigate to="/" />;
-    // }
-
-    return <Component {...props} />;
+    return isAdmin ? <WrappedComponent {...props} /> : null;
   };
+
+  return AuthHOC;
 };
 
-export default WithAuthAdmin; 
+export default WithAuthAdmin;

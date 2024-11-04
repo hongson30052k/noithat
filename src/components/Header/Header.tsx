@@ -6,11 +6,23 @@ import classNames from "classnames/bind";
 import { Link } from "react-router-dom";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { toggleCart } from "../../store/slices/CartSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { useEffect } from "react";
+import { fetchGetUserLogin } from "../../store/slices/UserLoginSlice";
 
 const cx = classNames.bind(styles);
 const Header = () => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector(
+    (state: RootState) => state.userState
+  );
+  const userId = useSelector(
+    (state: RootState) => state.UserLoginState.idUserProduct
+  );
+  useEffect(() => {
+    dispatch(fetchGetUserLogin());
+  }, [isAuthenticated]);
   return (
     <div className={cx("header")}>
       <img src={logo} alt="logo" />
@@ -20,9 +32,17 @@ const Header = () => {
         <Link to="/admin">Admin</Link>
       </nav>
       <div className={cx("nav-right")}>
-        <Link to="/login">
-          <img src={img} />
-        </Link>
+        {isAuthenticated ? (
+          <Link to="/profile" className={cx("img-profile")}>
+            {userId.map((user: any) => {
+              return <img src={user.img} alt={user.myname} className="img" />;
+            })}
+          </Link>
+        ) : (
+          <Link to="/login">
+            <img src={img} />
+          </Link>
+        )}
         <div>
           <img src={img1} onClick={() => dispatch(toggleCart())} />
         </div>

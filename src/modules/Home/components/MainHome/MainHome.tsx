@@ -10,6 +10,7 @@ const MainHome = () => {
       <span className={cx("text-muted")}>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
       </span>
+
       <div className={cx("main-home-content")}>
         <div className={cx("main-home-card")}>
           <img src={img} />

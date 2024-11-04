@@ -6,6 +6,9 @@ const initialState = {
   status: "idle",
   error: null,
   isAuthenticated: false,
+  isAdmin: false,
+  idUser: "",
+  userRender: [],
 };
 
 export const fetchCreateUser = createAsyncThunk(
@@ -38,17 +41,17 @@ export const fetchGetUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk(
   "userSlice/loginUser",
-  async ({ username, password }: any, thunkAPI) => {
+  async ({ username, password, id }: any, thunkAPI) => {
     const { rejectWithValue, getState } = thunkAPI;
     const state: any = getState();
     const users = state.userState.user;
     const user = users.find(
       (user: any) => user.username === username && user.password === password
     );
-
     if (!user) {
-      return rejectWithValue("error");
+      return rejectWithValue("tên đăng nhập hoặc mật khẩu không đúng");
     }
+    console.log(user, "user");
     return user;
   }
 );
@@ -60,13 +63,15 @@ export const UserSlice = createSlice({
     getUser: (state = initialState, action: PayloadAction<any>) => {
       state.users = action.payload;
     },
+    getIdUser: (state = initialState, action: PayloadAction<any>) => {},
   },
   extraReducers: (builder) => {
     builder.addCase(fetchCreateUser.pending, (state, action) => {});
     builder.addCase(
       fetchCreateUser.fulfilled,
       (state: any, action: PayloadAction<any>) => {
-        state.users = action.payload;
+        const value = { ...action.payload, isAdmin: true };
+        state.users = value;
         state.status = "success";
       }
     );
@@ -93,14 +98,18 @@ export const UserSlice = createSlice({
       (state, action: PayloadAction<any>) => {
         state.status = "success";
         state.isAuthenticated = true;
+        state.isAdmin = action.payload.isAdmin;
+        state.idUser = action.payload.id;
+        state.userRender = action.payload;
       }
     );
     builder.addCase(loginUser.rejected, (state, action: any) => {
       state.status = "failed";
       state.error = action.payload;
+      state.isAuthenticated = false;
     });
   },
 });
 
-export const { getUser } = UserSlice.actions;
+export const { getUser, getIdUser } = UserSlice.actions;
 export default UserSlice.reducer;

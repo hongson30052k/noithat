@@ -17,13 +17,18 @@ import CustomerManagement from "../CustomerManagement/CustomerManagement";
 import ProductManagement from "../ProductManagement/ProductManagement";
 
 const drawerWidth = 240;
+
 const AdminContent = () => {
   const [currentContent, setCurrentContent] = useState<React.ReactNode>(
     <DashboardContent />
   );
-  const handleItemClick = (component: React.ReactNode) => {
+  const [index, setIndex] = useState(0);
+
+  const handleItemClick = (component: React.ReactNode, index: number) => {
     setCurrentContent(component);
+    setIndex(index);
   };
+
   return (
     <>
       <Drawer
@@ -33,40 +38,57 @@ const AdminContent = () => {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
+            backgroundColor: "#fafafb",
           },
         }}
         variant="permanent"
         anchor="left"
       >
         <Toolbar />
-        <List>
-          <ListItemButton onClick={() => handleItemClick(<DashboardContent />)}>
-            <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" />
-          </ListItemButton>
+        <List style={{ fontSize: "1.4rem", fontWeight: "bold" }}>
           <ListItemButton
-            onClick={() => handleItemClick(<ProductManagement />)}
+            onClick={() => handleItemClick(<DashboardContent />, 0)}
+            sx={{
+              backgroundColor: index === 0 ? "#e0e0e0" : "transparent",
+            }}
           >
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
-            <ListItemText primary="Quản lý Sản phẩm" />
+            <span>Dashboard</span>
           </ListItemButton>
-          <ListItemButton onClick={() => handleItemClick(<OrderManagement />)}>
+          <ListItemButton
+            onClick={() => handleItemClick(<ProductManagement />, 1)}
+            sx={{
+              backgroundColor: index === 1 ? "#e0e0e0" : "transparent",
+            }}
+          >
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <span>Quản lý sản phẩm</span>
+          </ListItemButton>
+          <ListItemButton
+            onClick={() => handleItemClick(<OrderManagement />, 2)}
+            sx={{
+              backgroundColor: index === 2 ? "#e0e0e0" : "transparent",
+            }}
+          >
             <ListItemIcon>
               <ShoppingCartIcon />
             </ListItemIcon>
-            <ListItemText primary="Quản lý Đơn hàng" />
+            <span>Quản lý Đơn hàng</span>
           </ListItemButton>
           <ListItemButton
-            onClick={() => handleItemClick(<CustomerManagement />)}
+            onClick={() => handleItemClick(<CustomerManagement />, 3)}
+            sx={{
+              backgroundColor: index === 3 ? "#e0e0e0" : "transparent",
+            }}
           >
             <ListItemIcon>
               <PeopleIcon />
             </ListItemIcon>
-            <ListItemText primary="Quản lý Khách hàng" />
+            <span>Quản lý Khách Hàng</span>
           </ListItemButton>
         </List>
       </Drawer>

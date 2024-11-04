@@ -5,6 +5,8 @@ import ShopPage from "./pages/Shop/ShopPage";
 import SignUpPage from "./pages/SignUp/SignUpPage";
 import LoginPage from "./pages/Login/LoginPage";
 import AdminPage from "./pages/Admin/AdminPage";
+import UserLoginPage from "./pages/UserLogin/UserLoginPage";
+import ProfilePage from "./pages/Profile/ProfilePage";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/product/:id" element={<ProductPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/userLogin" element={<UserLoginPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </div>
   );

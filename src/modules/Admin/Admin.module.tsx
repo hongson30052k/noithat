@@ -1,3 +1,4 @@
+import WithAuthAdmin from "../../hoc/WithAuthAdmin";
 import AdminMain from "./components/AdminMain/AdminMain";
 
 const Admin = () => {
@@ -8,4 +9,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default WithAuthAdmin(Admin);
