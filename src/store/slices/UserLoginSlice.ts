@@ -59,11 +59,11 @@ export const UserLoginSlice = createSlice({
       fetchGetUserLogin.fulfilled,
       (state: any, action: PayloadAction<any>) => {
         state.idUserProduct = action.payload;
+        // localStorage.setItem("users", action.payload);
       }
     );
     builder.addCase(fetchGetUserLogin.rejected, (state, action) => {});
   },
 });
-
 export const {} = UserLoginSlice.actions;
 export default UserLoginSlice.reducer;

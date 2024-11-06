@@ -7,18 +7,19 @@ import { addToCart } from "../../store/slices/CartSlice";
 import { getProductId } from "../../store/slices/CartProductSlice";
 import styles from "./Card.module.scss";
 import classNames from "classnames/bind";
+import { fetchCreateProductId } from "../../store/slices/UserProductSlice";
 const cx = classNames.bind(styles);
 
 const Card = ({ product }: any) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const onAddToCart = (product: any) => {
-    dispatch(addToCart(product));
+    console.log(product, "product");
+    dispatch(fetchCreateProductId(product));
   };
   const onGetProduct = (id: any) => {
     dispatch(getProductId(id));
   };
-  console.log(product);
   return (
     <>
       {product && (

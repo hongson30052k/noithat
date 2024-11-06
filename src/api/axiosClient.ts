@@ -10,9 +10,6 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   function (config) {
-    const request = {
-      ...config,
-    };
     return config;
   },
   function (error) {

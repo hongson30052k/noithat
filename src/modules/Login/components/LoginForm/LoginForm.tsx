@@ -5,9 +5,14 @@ import classNames from "classnames/bind";
 import { TextField, Button, Container, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { fetchGetUser, loginUser, setError } from "../../../../store/slices/UserSlice";
+import {
+  fetchGetUser,
+  loginUser,
+  setError,
+} from "../../../../store/slices/UserSlice";
 import { RootState } from "../../../../store/store";
 import { Link, useNavigate } from "react-router-dom";
+import { fetchGetUserLogin } from "../../../../store/slices/UserLoginSlice";
 const cx = classNames.bind(styles);
 
 const LoginForm = () => {
@@ -15,12 +20,13 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const isAuthenticated = useSelector(
     (state: RootState) => state.userState.isAuthenticated
-  )
+  );
   const loginStatus = useSelector((state: RootState) => state.userState.status);
   const loginError = useSelector((state: RootState) => state.userState.error);
   console.log(loginError, "error");
   useEffect(() => {
     dispatch(fetchGetUser());
+    dispatch(fetchGetUserLogin());
   }, [dispatch]);
 
   const initialValues = {
@@ -45,22 +51,22 @@ const LoginForm = () => {
   };
 
   const onClearError = () => {
-    dispatch(setError())
-  }
+    dispatch(setError());
+  };
 
   return (
     <>
       <div className={cx("form-container")}>
         <Container className={cx("sign-up-form")}>
-        <Link to="/" className={cx("link")}>
-          Quay lại
-        </Link>
+          <Link to="/" className={cx("link")}>
+            Quay lại
+          </Link>
           <Typography
             variant="h4"
             component="h4"
             fontWeight="bold"
             color="#131118"
-            sx={{ fontSize: "40px", }}
+            sx={{ fontSize: "40px" }}
           >
             Welcome 👋
           </Typography>
@@ -68,7 +74,6 @@ const LoginForm = () => {
             variant="subtitle1"
             component="p"
             sx={{
-              
               fontFamily: "Jost",
               fontStyle: "normal",
               fontWeight: "400",
@@ -120,7 +125,7 @@ const LoginForm = () => {
                   onFocus={onClearError}
                   slotProps={{
                     input: {
-                      style: { fontSize: "16px", marginBottom: "10px" },  
+                      style: { fontSize: "16px", marginBottom: "10px" },
                     },
                     inputLabel: {
                       style: {
@@ -138,7 +143,7 @@ const LoginForm = () => {
                     },
                   }}
                 />
-  
+
                 <Typography
                   sx={{
                     fontFamily: "Jost",
@@ -147,7 +152,6 @@ const LoginForm = () => {
                     fontSize: "20px",
                     lineHeight: "20px",
                     color: "#131118",
-               
                   }}
                 >
                   Password
@@ -185,7 +189,7 @@ const LoginForm = () => {
                     },
                   }}
                 />
-  
+
                 <Button
                   type="submit"
                   variant="contained"
@@ -201,14 +205,21 @@ const LoginForm = () => {
                     color: "#FFFFFF",
                   }}
                 >
-                  {loginStatus === "loading" ? "Đang đăng nhập..." : "Đăng nhập"}
+                  {loginStatus === "loading"
+                    ? "Đang đăng nhập..."
+                    : "Đăng nhập"}
                 </Button>
                 {loginError ? (
                   <p className={cx("error-message")} style={{ color: "red" }}>
                     {loginError}
                   </p>
                 ) : null}
-                <div className={cx("register")}>If you don't have an account? <Link className={cx("register-link")} to="/signup">Register</Link></div>
+                <div className={cx("register")}>
+                  If you don't have an account?{" "}
+                  <Link className={cx("register-link")} to="/signup">
+                    Register
+                  </Link>
+                </div>
               </form>
             )}
           </Formik>

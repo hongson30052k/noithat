@@ -10,7 +10,7 @@ const WithAuthAdmin = (WrappedComponent: React.FC) => {
 
     useEffect(() => {
       if (!isAdmin) {
-        navigate("/login");
+        navigate("/");
       } else {
         navigate("/admin");
       }

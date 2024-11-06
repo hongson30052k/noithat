@@ -4,6 +4,7 @@ import classNames from "classnames/bind";
 import { RootState } from "../../../../store/store";
 import { useState } from "react";
 import ProfileEdit from "../ProfileEdit/ProfileEdit";
+import ProfileShopping from "../ProfileShopping/ProfileShopping";
 const cx = classNames.bind(styles);
 
 const ProfileSidebar = () => {
@@ -53,7 +54,11 @@ const ProfileSidebar = () => {
             <ProfileEdit />
           </div>
         )}
-        {idContent === 2 && <div>Content 2</div>}
+        {idContent === 2 && (
+          <>
+            <ProfileShopping />
+          </>
+        )}
       </div>
     </>
   );

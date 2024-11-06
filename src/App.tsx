@@ -7,8 +7,20 @@ import LoginPage from "./pages/Login/LoginPage";
 import AdminPage from "./pages/Admin/AdminPage";
 import UserLoginPage from "./pages/UserLogin/UserLoginPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "./store/store";
+import { useEffect } from "react";
+import { setUserFromLocalStorage } from "./store/slices/UserSlice";
 
 function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const userFromLocalStorage = localStorage.getItem("user");
+    console.log(userFromLocalStorage, "userFromLocalStorage");
+    if (userFromLocalStorage) {
+      dispatch(setUserFromLocalStorage(JSON.parse(userFromLocalStorage)));
+    }
+  }, [dispatch]);
   return (
     <div className="App">
       <Routes>
