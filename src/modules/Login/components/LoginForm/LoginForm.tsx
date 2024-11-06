@@ -41,13 +41,16 @@ const LoginForm = () => {
       .min(6, "Password must be at least 6 characters long"),
   });
 
-  const handleSubmit = (values: any) => {
-    dispatch(loginUser(values));
-    if (isAuthenticated) {
-      navigate("/");
-    } else {
-      console.log(loginError);
+  const handleSubmit = async (values: any) => {
+    const res: any = await dispatch(loginUser(values));
+    const payload = res.payload;
+    if (typeof payload === "string") {
+      alert(payload);
+      return;
     }
+
+    navigate("/");
+    alert("Login thành công");
   };
 
   const onClearError = () => {

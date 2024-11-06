@@ -13,9 +13,9 @@ const cx = classNames.bind(styles);
 const Card = ({ product }: any) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const onAddToCart = (product: any) => {
+  const onAddToCart = async (product: any) => {
     console.log(product, "product");
-    dispatch(fetchCreateProductId(product));
+    await dispatch(fetchCreateProductId(product));
   };
   const onGetProduct = (id: any) => {
     dispatch(getProductId(id));

@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./ProfileShopping.module.scss";
 import classNames from "classnames/bind";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchGetUserProduct } from "../../../../store/slices/UserProductSlice";
+import { RootState } from "../../../../store/store";
 const cx = classNames.bind(styles);
 
 const ProfileShopping = () => {
+  const dispatch = useDispatch();
+  const {idUser} = useSelector((state: RootState) => state.userState);
+  const {userProduct} = useSelector((state: RootState) => state.userProductState);
+  console.log(userProduct, "userProduct");
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -30,31 +37,32 @@ const ProfileShopping = () => {
       image: "https://via.placeholder.com/100",
     },
   ]);
-
+  useEffect(() => {
+    dispatch(fetchGetUserProduct(idUser));
+  }, []); 
   return (
     <div className={cx("shopping-cart")}>
       <div className={cx("cart-header")}>
         <h2>Giỏ Hàng</h2>
         <button className={cx("clear-cart")}>Xóa Giỏ Hàng</button>
       </div>
-
       <div className={cx("cart-items")}>
-        {cartItems.map((item) => (
+        {userProduct && userProduct.map((item: any) => (
           <div key={item.id} className={cx("cart-item")}>
-            <img src={item.image} alt={item.name} className="item-image" />
+            <img  alt={item.name} className="item-image" />
             <div className={cx("item-details")}>
               <h3>{item.name}</h3>
               <div className={cx("price-info")}>
                 <p className={cx("original-price")}>
-                  {item.originalPrice.toLocaleString()} VND
+                  {item.price} VND
                 </p>
                 <p className={cx("discounted-price")}>
-                  {item.discountedPrice.toLocaleString()} VND
+                  {item.price} VND
                 </p>
               </div>
               <div className={cx("item-quantity")}>
-                <button disabled={item.quantity <= 1}>-</button>
-                <span>{item.quantity}</span>
+                <button>-</button>
+                <span>1</span>
                 <button>+</button>
               </div>
               <button className={cx("remove-item")}>Xóa</button>

@@ -10,27 +10,43 @@ const initialState: any = {
 export const fetchCreateProductId = createAsyncThunk(
   "userProductSlice/fetchCreateUserProduct",
   async (productId: any, { getState, rejectWithValue }) => {
+    console.log(productId, "productIdfecth");
     const state: any = getState();
     const idUser = state.userState.userRender;
+    const data = productId.map((item: any) => {
+      return {
+        ...productId,
+        userId: idUser,
+      };
+    });
     try {
-      const res = await axiosInstance.get(`/users/${idUser.id}`);
-      const user: any = res;
-      console.log(user, "user");
-
-      const updateReponsive = await axiosInstance.patch(`/users/${idUser.id}`, {
-        product: [...user.product, productId],
-      });
-      console.log(updateReponsive, "updateReponsive");
-      return updateReponsive;
+      const response = await axiosInstance.post(
+        `cart`,
+        data,
+      )
+      return response
     } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
+      console.log("lỗi rồi nha!");
     }
   }
 );
 
+export const fetchGetUserProduct = createAsyncThunk(
+  "userProductSlice/fetchGetUserProduct",
+  async (idUser: any, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.get(`/cart?userId=${idUser}`);
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+)
+
+
 export const userProductSlice = createSlice({
   name: "userProductSlice",
-  initialState,
+  initialState: initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchCreateProductId.pending, (state) => {
@@ -45,6 +61,15 @@ export const userProductSlice = createSlice({
       state.loading = false;
       state.error = action.payload || "Something went wrong!";
     });
+    builder.addCase(fetchGetUserProduct.pending, (state) => {
+    })
+    builder.addCase(fetchGetUserProduct.fulfilled, (state, action) => {
+      const data = [userProductSlice, action.payload];
+      console.log(data, "data")
+      state.userProduct = data
+    })
+    builder.addCase(fetchGetUserProduct.rejected, (state, action) => {
+    })
   },
 });
 

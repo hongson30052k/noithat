@@ -39,21 +39,25 @@ export const fetchGetUser = createAsyncThunk(
   }
 );
 
-export const loginUser = createAsyncThunk(
+export const loginUser = createAsyncThunk<any, any>(
   "userSlice/loginUser",
   async ({ username, password, id }: any, thunkAPI) => {
-    const { rejectWithValue, getState } = thunkAPI;
-    const state: any = getState();
-    const users = state.userState.user;
-    const user = users.find(
-      (user: any) => user.username === username && user.password === password
-    );
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const users: any[] = await axiosInstance.get("/users");
+      const user = users?.find(
+        (user: any) =>
+          user?.username === username && user?.password === password
+      );
 
-    if (!user) {
+      if (!user) {
+        return rejectWithValue("Tên đăng nhập hoặc mật khẩu không đúng");
+      }
+
+      return user;
+    } catch (error) {
       return rejectWithValue("Tên đăng nhập hoặc mật khẩu không đúng");
     }
-    console.log(user, "user");
-    return user;
   }
 );
 
@@ -164,3 +168,4 @@ export const {
   logoutUser,
 } = UserSlice.actions;
 export default UserSlice.reducer;
+  
