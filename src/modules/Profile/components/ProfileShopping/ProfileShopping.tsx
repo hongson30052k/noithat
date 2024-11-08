@@ -2,81 +2,106 @@ import { useEffect, useState } from "react";
 import styles from "./ProfileShopping.module.scss";
 import classNames from "classnames/bind";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchGetUserProduct } from "../../../../store/slices/UserProductSlice";
+import {
+  fetchDecrease,
+  fetchDeleteProduct,
+  fetchDeleteUserProduct,
+  fetchGetUserProduct,
+  fetchIncrease,
+} from "../../../../store/slices/UserProductSlice";
 import { RootState } from "../../../../store/store";
+import { useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
 
 const ProfileShopping = () => {
+  let result = 0;
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {idUser} = useSelector((state: RootState) => state.userState);
-  const {userProduct} = useSelector((state: RootState) => state.userProductState);
-  console.log(userProduct, "userProduct");
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Áo thun nam",
-      originalPrice: 250000,
-      discountedPrice: 199000,
-      quantity: 2,
-      image: "https://via.placeholder.com/100",
-    },
-    {
-      id: 2,
-      name: "Giày thể thao",
-      originalPrice: 650000,
-      discountedPrice: 550000,
-      quantity: 1,
-      image: "https://via.placeholder.com/100",
-    },
-    {
-      id: 3,
-      name: "Balo thời trang",
-      originalPrice: 400000,
-      discountedPrice: 350000,
-      quantity: 1,
-      image: "https://via.placeholder.com/100",
-    },
-  ]);
+  const { idUser } = useSelector((state: RootState) => state.userState);
+  const { userProducts, action } = useSelector(
+    (state: RootState) => state.userProductState
+  );
+  const deleteAllCart = async () => {
+    const res: any = await dispatch(fetchDeleteUserProduct(idUser));
+    console.log(res, "res");
+  };
+  const handleIncrease = (id: any) => {
+    dispatch(fetchIncrease(id));
+  };
+  const handleDecrease = (id: any) => {
+    dispatch(fetchDecrease(id));
+  };
+  const handleDelete = async (id: any) => {
+    await dispatch(fetchDeleteProduct(id));
+  };
   useEffect(() => {
     dispatch(fetchGetUserProduct(idUser));
-  }, []); 
+  }, [action, dispatch]);
+
+  if (userProducts && userProducts.length > 0) {
+    for (let i = 0; i < userProducts.length; i++) {
+      result += userProducts[i].product.price * userProducts[i].quantity;
+    }
+  }
+  const handleSubmit = () => {
+    if (result > 0) {
+      navigate("/order");
+    } else {
+      alert("Gior hàng trống!");
+    }
+  };
   return (
     <div className={cx("shopping-cart")}>
       <div className={cx("cart-header")}>
         <h2>Giỏ Hàng</h2>
-        <button className={cx("clear-cart")}>Xóa Giỏ Hàng</button>
+        <button className={cx("clear-cart")} onClick={deleteAllCart}>
+          Xóa Giỏ Hàng
+        </button>
       </div>
-      <div className={cx("cart-items")}>
-        {userProduct && userProduct.map((item: any) => (
-          <div key={item.id} className={cx("cart-item")}>
-            <img  alt={item.name} className="item-image" />
-            <div className={cx("item-details")}>
-              <h3>{item.name}</h3>
-              <div className={cx("price-info")}>
-                <p className={cx("original-price")}>
-                  {item.price} VND
-                </p>
-                <p className={cx("discounted-price")}>
-                  {item.price} VND
-                </p>
+      {userProducts && userProducts.length > 0 ? (
+        userProducts.map((item: any) => (
+          <div className={cx("cart-items")}>
+            <div key={item.product.id} className={cx("cart-item")}>
+              <img alt={item.product.name} className="item-image" />
+              <div className={cx("item-details")}>
+                <h3>{item.product.name}</h3>
+                <div className={cx("price-info")}>
+                  <p className={cx("original-price")}>
+                    {item.product.price} VND
+                  </p>
+                  <p className={cx("discounted-price")}>
+                    {item.product.price} VND
+                  </p>
+                </div>
+                <div className={cx("item-quantity")}>
+                  <button onClick={() => handleDecrease(item.id)}>-</button>
+                  <span>{item.quantity}</span>
+                  <button onClick={() => handleIncrease(item.id)}>+</button>
+                </div>
+                <button
+                  className={cx("remove-item")}
+                  onClick={() => {
+                    handleDelete(item.id);
+                  }}
+                >
+                  Xóa
+                </button>
               </div>
-              <div className={cx("item-quantity")}>
-                <button>-</button>
-                <span>1</span>
-                <button>+</button>
-              </div>
-              <button className={cx("remove-item")}>Xóa</button>
             </div>
           </div>
-        ))}
-      </div>
+        ))
+      ) : (
+        <div className={cx("cart-empty")}>không có sản phẩm</div>
+      )}
 
       <div className={cx("cart-summary")}>
         <div className={cx("total")}>
           <p>Tổng tiền:</p>
-          <p className={cx("total-price")}>{2000000} VND</p>
+          <p className={cx("total-price")}>{result} VND</p>
         </div>
-        <button className={cx("checkout-button")}>Thanh Toán</button>
+        <button className={cx("checkout-button")} onClick={handleSubmit}>
+          Thanh Toán
+        </button>
       </div>
     </div>
   );

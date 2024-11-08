@@ -1,3 +1,4 @@
+import CardMessage from "../../../../components/CartMessage/CartMessage";
 import img from "./img/img.svg";
 import styles from "./MainHome.module.scss";
 import classNames from "classnames/bind";
@@ -10,7 +11,6 @@ const MainHome = () => {
       <span className={cx("text-muted")}>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
       </span>
-
       <div className={cx("main-home-content")}>
         <div className={cx("main-home-card")}>
           <img src={img} />

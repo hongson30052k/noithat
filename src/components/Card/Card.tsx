@@ -8,14 +8,20 @@ import { getProductId } from "../../store/slices/CartProductSlice";
 import styles from "./Card.module.scss";
 import classNames from "classnames/bind";
 import { fetchCreateProductId } from "../../store/slices/UserProductSlice";
+import CardMessage from "../CartMessage/CartMessage";
 const cx = classNames.bind(styles);
 
 const Card = ({ product }: any) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const onAddToCart = async (product: any) => {
-    console.log(product, "product");
-    await dispatch(fetchCreateProductId(product));
+  const onAddToCart = async (id: any) => {
+    const res: any = await dispatch(fetchCreateProductId(id));
+    const result = res.payload;
+    if (typeof result === "string") {
+      alert(result);
+    } else {
+      alert("Đã thêm sản phẩm vào giỏ hàng");
+    }
   };
   const onGetProduct = (id: any) => {
     dispatch(getProductId(id));
@@ -47,7 +53,7 @@ const Card = ({ product }: any) => {
             </div>
           </div>
           <div className={cx("card-button")}>
-            <div className={cx("btn")} onClick={() => onAddToCart(product)}>
+            <div className={cx("btn")} onClick={() => onAddToCart(product.id)}>
               ADD TO CART
             </div>
             <div className={cx("card-icon")}>

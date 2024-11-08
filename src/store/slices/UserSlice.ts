@@ -41,7 +41,7 @@ export const fetchGetUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk<any, any>(
   "userSlice/loginUser",
-  async ({ username, password, id }: any, thunkAPI) => {
+  async ({ username, password }: any, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
       const users: any[] = await axiosInstance.get("/users");
@@ -168,4 +168,3 @@ export const {
   logoutUser,
 } = UserSlice.actions;
 export default UserSlice.reducer;
-  

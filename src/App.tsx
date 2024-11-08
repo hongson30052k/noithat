@@ -7,10 +7,10 @@ import LoginPage from "./pages/Login/LoginPage";
 import AdminPage from "./pages/Admin/AdminPage";
 import UserLoginPage from "./pages/UserLogin/UserLoginPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "./store/store";
+import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { setUserFromLocalStorage } from "./store/slices/UserSlice";
+import OrderPagePage from "./pages/CheckoutPage/CheckoutPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -32,6 +32,7 @@ function App() {
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/userLogin" element={<UserLoginPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/order" element={<OrderPagePage />} />
       </Routes>
     </div>
   );
