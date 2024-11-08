@@ -1,9 +1,6 @@
 import React, {
-  useState,
   useEffect,
-  useCallback,
   useMemo,
-  useReducer,
 } from "react";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,7 +10,7 @@ import { RootState } from "../../../../store/store";
 import { useFormik } from "formik";
 import GenerateIdWithDate from "../../../../utils/GenerateIdWithDate/GenerateIdWithDate";
 import { useNavigate } from "react-router-dom";
-import Product from "../../../Product/Product.module";
+import { fetchCreateOrder } from "../../../../store/slices/CartOderSlice";
 
 const cx = classNames.bind(styles);
 
@@ -28,7 +25,7 @@ const CheckoutPageMain = () => {
   const { idUserProduct }: any = useSelector(
     (state: RootState) => state.UserLoginState
   );
-  console.log(idUserProduct, "id");
+  console.log(idUserProduct, "idUserProduct");
 
   const { userRender }: any = useSelector(
     (state: RootState) => state.userState
@@ -68,7 +65,7 @@ const CheckoutPageMain = () => {
       address: Yup.string().required("Vui lòng nhập điểm giao hàng"),
       phone: Yup.string().required("Vui lý nhập điểm giao hàng"),
     }),
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       const value = {
         id: id,
         name: formik.values.name,
@@ -76,9 +73,16 @@ const CheckoutPageMain = () => {
         phone: formik.values.phone,
         paymentMethod: formik.values.paymentMethod,
         total: result,
-        productId: userProducts,
+        product: userProducts,
+        userId : userProducts[0].userId
       };
-      console.log(value, "value");
+      const res: any = await dispatch(fetchCreateOrder(value));
+      if(res.payload === "string") {
+        alert(res.payload);
+      } else {
+        alert("Đơn hàng thành công");
+        navigate("/");
+      }
     },
   });
   const handleReset = () => {
