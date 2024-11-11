@@ -1,33 +1,91 @@
-.sidebar {
-  margin-top: 50px;
-  width: 312px;
-  background-color: #ffffff;
-  border: 1px solid #d9d9d9;
-}
-.menu {
-  display: flex;
-  align-items: center;
-  background-color: #d9d9d9;
-  cursor: pointer;
-  .btn-menu-item {
-    padding: 20px;
-    padding-left: 20px;
-    width: 100%;
-  }
-}
-.sub-menu {
-  gap: 10px;
-  .sub-menu-item {
-    padding: 10px;
-    .sub-menu-item-name {
-      width: 312px;
-      padding-left: 20px;
+// Biến màu sắc và font
+$primary-color: #4caf50; // Màu xanh nhạt, nhẹ nhàng
+$hover-color: #c8e6c9; // Màu hover nhạt, tạo cảm giác dễ chịu
+$active-color: #388e3c; // Màu nền khi mục menu được chọn (tông màu tối hơn một chút)
+$neutral-dark: #333; // Màu chữ tối cho tiêu đề
+$neutral-medium: #666; // Màu chữ cho submenu
+$neutral-light: #999; // Màu chữ nhẹ cho những mục ít quan trọng
+$white: #fff;
+$font-size-base: 14px;
+$font-size-heading: 16px;
+$transition-duration: 0.3s;
+
+// Sidebar container
+.sidebar-shop {
+  user-select: none;
+  width: 250px;
+  background-color: $primary-color;
+  color: $white;
+  padding: 20px;
+  height: 100vh;
+  // position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  border-right: 2px solid #ddd; // Thêm đường viền nhẹ cho sidebar
+
+  // Menu item chung
+  .menu-item {
+    padding: 12px 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: $font-size-base;
+    font-weight: bold;
+    color: $white;
+    transition: background-color $transition-duration ease;
+
+    &:hover {
+      background-color: $hover-color;
+    }
+
+    &.active {
+      background-color: $active-color;
+    }
+
+    .btn-menu-item {
+      display: block;
       width: 100%;
+      color: inherit;
+      text-decoration: none;
+      font-size: inherit;
+    }
+  }
+
+  // Submenu (các mục menu con)
+  .sub-menu {
+    margin-top: 10px;
+    padding-left: 20px;
+    display: none;
+    transition: max-height $transition-duration ease;
+
+    // Hiển thị submenu khi active
+    &.active {
+      display: block;
+    }
+
+    .sub-menu-item {
+      padding: 8px 0;
+      cursor: pointer;
+      font-size: $font-size-base;
+      color: $neutral-medium;
+
+      &:hover {
+        color: $primary-color;
+      }
+
+      .sub-menu-item-name {
+        padding-left: 20px;
+      }
     }
   }
 }
 
-/* Menu */
-/* Categories */
-
-/* Gray Scale/White */
+// Responsive: Mobile view
+@media (max-width: 768px) {
+  .sidebar-shop {
+    width: 200px;
+  }
+}

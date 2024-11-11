@@ -9,14 +9,14 @@ const CardSideBar = () => {
     setActiveIndex(activeIndex === index ? null : index);
   };
   return (
-    <div className={cx("sidebar")}>
+    <div className={cx("sidebar-shop")}>
       {menus &&
         menus.map((item, index) => {
           return (
             <div>
               <div
                 key={index}
-                className={cx("menu")}
+                className={cx("menu-item")}
                 style={activeIndex === index ? { backgroundColor: "aqua" } : {}}
               >
                 <span

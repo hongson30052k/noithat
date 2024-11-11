@@ -4,31 +4,40 @@ import styles from "./ProductList.module.scss";
 import classNames from "classnames/bind";
 import { RootState } from "../../../../store/store";
 import { useEffect } from "react";
-import { fetchProductApi } from "../../../../store/slices/CartProductSlice";
+import {
+  fetchGetImgProduct,
+  fetchGetImgProductId,
+  fetchProductApi,
+} from "../../../../store/slices/CartProductSlice";
 const cx = classNames.bind(styles);
 
 const ProductList = () => {
+  const id: any = localStorage.getItem("productId");
   const dispatch = useDispatch();
-  const id = useSelector((state: any) => state.cartProductState.productId);
-  const cartId: any = useSelector(
-    (state: RootState) => state.cartProductState.cardId
+  const { cardId, cardImg, status }: any = useSelector(
+    (state: RootState) => state.cartProductState
   );
   useEffect(() => {
     dispatch(fetchProductApi(id));
-  }, []);
+    dispatch(fetchGetImgProductId(id));
+    return () => {
+      localStorage.removeItem("productId");
+    };
+  }, [dispatch, id]);
+  const data = { ...cardId, ...cardImg };
   return (
     <>
-      {cartId && (
+      {data && (
         <>
           <div className={cx("product-list")}>
             <div className={cx("product-list-img2")}>
-              <img src="" alt="" className={cx("product-list-img2")} />
+              <img src={data?.img} alt="" className={cx("product-list-img2")} />
             </div>
             <div className={cx("product-list-info")}>
-              <span className={cx("text-title")}>{cartId.name}</span>
-              <span className={cx("text-price")}>${cartId.price}</span>
+              <span className={cx("text-title")}>{data?.name}</span>
+              <span className={cx("text-price")}>${data?.price}</span>
               <Ratings />
-              <span className={cx("text-muted")}>{cartId.description}</span>
+              <span className={cx("text-muted")}>{data?.description}</span>
               <span className={cx("text-size")}>Size</span>
               <div className={cx("size-list")}>
                 <span>L</span>

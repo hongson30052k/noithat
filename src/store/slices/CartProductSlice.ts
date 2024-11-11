@@ -1,16 +1,23 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../api/axiosClient";
+import { axiosInstanceUser } from "../../api/axiosClientUser";
 
 interface IInitialState {
   card: any[];
   productId: string;
   cardId: any[];
+  cartImg: any[];
+  cardImg: any[];
+  status: boolean;
 }
 
 const initialState: IInitialState = {
   card: [],
   productId: "",
   cardId: [],
+  cartImg: [],
+  cardImg: [],
+  status: false,
 };
 export const fetchCartProductAPI = createAsyncThunk(
   "cartProductSlice/fetchCartProductAPI",
@@ -20,7 +27,31 @@ export const fetchCartProductAPI = createAsyncThunk(
       const res = await axiosInstance.get("http://localhost:5000/products", {
         baseURL: "/",
       });
-
+      console.log(res, "resproduct");
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchGetImgProduct = createAsyncThunk(
+  "userProductSlice/fetchGetImgProduct",
+  async (_, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get("/imgProduct");
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchGetImgProductId = createAsyncThunk(
+  "userProductSlice/fetchGetImgProductId",
+  async (id: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(`/imgProduct/${id}`);
       return res;
     } catch (error) {
       rejectWithValue(error);
@@ -28,6 +59,17 @@ export const fetchCartProductAPI = createAsyncThunk(
   }
 );
 
+export const fetchAddImgProduct = createAsyncThunk(
+  "userProductSlice/fetchAddImgProduct",
+  async (data: any, { rejectWithValue }) => {
+    try {
+      const response: any = await axiosInstance.post(`/imgProduct`, data);
+      return response;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
 export const fetchProductApi = createAsyncThunk(
   "cartProductSlice/fetchProductApi",
   async (id: string, thunkAPI) => {
@@ -63,10 +105,23 @@ export const fetchAddToCart = createAsyncThunk(
 
 export const fetchDeleteCart = createAsyncThunk(
   "cartProductSlice/fetchDeleteCart",
-  async (id: string, thunkAPI) => {
+  async (id: any, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
       const res = await axiosInstance.delete(`/products/${id}`);
+      console.log(res, "resproduct");
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchDeleteImgCart = createAsyncThunk(
+  "cartProductSlice/fetchDeleteImgCart",
+  async (id: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res = await axiosInstance.delete(`/imgProduct/${id}`);
       console.log(res, "resproduct");
       return res;
     } catch (error) {
@@ -121,6 +176,32 @@ export const cartProductSlice = createSlice({
       (state, action: PayloadAction<any>) => {}
     );
     builder.addCase(fetchDeleteCart.rejected, (state, action) => {});
+
+    builder.addCase(fetchGetImgProduct.pending, (state, action) => {});
+    builder.addCase(
+      fetchGetImgProduct.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.cartImg = action.payload;
+      }
+    );
+
+    builder.addCase(fetchGetImgProduct.rejected, (state, action) => {});
+    builder.addCase(fetchAddImgProduct.pending, (state, action) => {});
+    builder.addCase(
+      fetchAddImgProduct.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.status = !state.status;
+      }
+    );
+    builder.addCase(fetchAddImgProduct.rejected, (state, action) => {});
+    builder.addCase(fetchGetImgProductId.pending, (state, action) => {});
+    builder.addCase(
+      fetchGetImgProductId.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.cardImg = action.payload;
+      }
+    );
+    builder.addCase(fetchGetImgProductId.rejected, (state, action) => {});
   },
 });
 

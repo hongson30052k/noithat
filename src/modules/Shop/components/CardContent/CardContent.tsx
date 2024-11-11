@@ -5,23 +5,33 @@ import styles from "./ShowCard.module.scss";
 import classNames from "classnames/bind";
 import { RootState } from "../../../../store/store";
 import { useEffect } from "react";
-import { fetchCartProductAPI } from "../../../../store/slices/CartProductSlice";
+import {
+  fetchCartProductAPI,
+  fetchGetImgProduct,
+} from "../../../../store/slices/CartProductSlice";
 const cx = classNames.bind(styles);
 
 const CardContent = () => {
   const dispatch = useDispatch();
-  const products = useSelector(
-    (state: RootState) => state.cartProductState.card
+  const { cartImg, card } = useSelector(
+    (state: RootState) => state.cartProductState
   );
-  console.log(products, "shop");
+  console.log(cartImg, "cartImg");
+  console.log(card, "cardId");
+  const data = card?.map((item) => {
+    const item1 = cartImg?.find((item2) => item2?.id === item?.id);
+    return item1 ? { ...item, ...item1 } : item;
+  });
+  console.log(data, "data");
   useEffect(() => {
     dispatch(fetchCartProductAPI());
+    dispatch(fetchGetImgProduct());
   }, []);
   return (
     <div>
-      <div className={cx("main-home-cart-content")}>
-        {products.map((product, index) => {
-          return <Card key={index} product={product} />;
+      <div className={cx("main-home-cart-content-show")}>
+        {data?.map((data, index) => {
+          return <Card key={index} data={data} />;
         })}
       </div>
       <PaginationItem />

@@ -1,9 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { axiosInstanceUser } from "../../api/axiosClientUser";
+import { axiosInstance } from "../../api/axiosClient";
 
 const initialState = {
   users: [],
   idUserProduct: [],
+  userImgAdmin: [],
 };
 
 export const fetchCreateUserLogin = createAsyncThunk(
@@ -11,8 +13,22 @@ export const fetchCreateUserLogin = createAsyncThunk(
   async (userData: any, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
-      const res = await axiosInstanceUser.post("/user", userData);
+      const user: any = { ...userData, isAdmin: false };
+      const res = await axiosInstance.post("/userImg", user);
       console.log(res);
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+
+export const fetchGetImgFalseAdmin = createAsyncThunk(
+  "UserLoginSlice/fetchGetImgFalseAdmin",
+  async (_, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get("/userImg?isAdmin=false");
       return res;
     } catch (error) {
       rejectWithValue(error);
@@ -25,7 +41,7 @@ export const fetchGetUserLogin = createAsyncThunk(
   async (_, thunkAPI) => {
     const { rejectWithValue, getState } = thunkAPI;
     const state: any = getState();
-    const res1: any = await axiosInstanceUser.get("/user");
+    const res1: any = await axiosInstance.get("/userImg");
     const idUser = state.userState.idUser;
     console.log(idUser, "iduser");
     const resdata: any = res1.filter(
@@ -63,6 +79,15 @@ export const UserLoginSlice = createSlice({
       }
     );
     builder.addCase(fetchGetUserLogin.rejected, (state, action) => {});
+
+    builder.addCase(fetchGetImgFalseAdmin.pending, (state, action) => {});
+    builder.addCase(
+      fetchGetImgFalseAdmin.fulfilled,
+      (state: any, action: PayloadAction<any>) => {
+        state.userImgAdmin = action.payload;
+      }
+    );
+    builder.addCase(fetchGetImgFalseAdmin.rejected, (state, action) => {});
   },
 });
 export const {} = UserLoginSlice.actions;

@@ -29,12 +29,10 @@ const UserLoginForm: React.FC = () => {
     }),
     onSubmit: async (values) => {
       const value = {
-        id: 1,
         myname: values.myname,
         img: imageData,
       };
       console.log(value);
-
       await dispatch(fetchCreateUserLogin(value));
       formik.resetForm();
       navigate("/login");

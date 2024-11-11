@@ -5,12 +5,14 @@ import { RootState } from "../../../../store/store";
 import { useState } from "react";
 import ProfileEdit from "../ProfileEdit/ProfileEdit";
 import ProfileShopping from "../ProfileShopping/ProfileShopping";
+import ProfileCartOrder from "../ProfileCartOrder/ProfileCartOrder";
 const cx = classNames.bind(styles);
 
 const ProfileSidebar = () => {
   const userProduct = useSelector(
     (state: RootState) => state.UserLoginState.idUserProduct
   );
+
   const { isAdmin } = useSelector((state: RootState) => state.userState);
   const [idContent, setIdContent] = useState(1);
   return (
@@ -42,6 +44,16 @@ const ProfileSidebar = () => {
                 style={idContent === 2 ? { backgroundColor: "#1abc9c" } : {}}
                 onClick={() => setIdContent(2)}
               >
+                Giỏ hàng
+              </span>
+            </li>
+          )}
+          {isAdmin ? null : (
+            <li>
+              <span
+                style={idContent === 3 ? { backgroundColor: "#1abc9c" } : {}}
+                onClick={() => setIdContent(3)}
+              >
                 Đơn Hàng
               </span>
             </li>
@@ -57,6 +69,11 @@ const ProfileSidebar = () => {
         {idContent === 2 && (
           <>
             <ProfileShopping />
+          </>
+        )}
+        {idContent === 3 && (
+          <>
+            <ProfileCartOrder />
           </>
         )}
       </div>

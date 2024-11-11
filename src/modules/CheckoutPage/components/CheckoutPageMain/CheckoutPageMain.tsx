@@ -1,7 +1,4 @@
-import React, {
-  useEffect,
-  useMemo,
-} from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./CheckoutPageMain.module.scss";
@@ -11,6 +8,7 @@ import { useFormik } from "formik";
 import GenerateIdWithDate from "../../../../utils/GenerateIdWithDate/GenerateIdWithDate";
 import { useNavigate } from "react-router-dom";
 import { fetchCreateOrder } from "../../../../store/slices/CartOderSlice";
+// import { fetchCreateOrder } from "../../../../store/slices/CartOderSlice";
 
 const cx = classNames.bind(styles);
 
@@ -30,25 +28,6 @@ const CheckoutPageMain = () => {
   const { userRender }: any = useSelector(
     (state: RootState) => state.userState
   );
-
-  //   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const { name, value } = e.target;
-  //     setFormData({ ...formData, [name]: value });
-  //   };
-
-  //   const handleSelectPayment = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //     setFormData({ ...formData, paymentMethod: e.target.value });
-  //   };
-
-  //   const handleCheckout = () => {
-  //     const cartItems = userProducts.map((item) => ({
-  //       productId: item.product.id,
-  //       quantity: item.quantity,
-  //       discountedPrice: item.product.discountedPrice,
-  //     }));
-  //     // Gửi thông tin đơn hàng
-  //     dispatch(createOrder({ userId: idUser, cartItems }));
-  //   };
   for (let i = 0; i < userProducts.length; i++) {
     result += userProducts[i].product.price * userProducts[i].quantity;
   }
@@ -74,18 +53,22 @@ const CheckoutPageMain = () => {
         paymentMethod: formik.values.paymentMethod,
         total: result,
         product: userProducts,
-        userId : userProducts[0].userId
+        userId: userProducts[0].userId,
+        date: new Date(),
+        status: "Pending",
       };
       const res: any = await dispatch(fetchCreateOrder(value));
-      if(res.payload === "string") {
-        alert(res.payload);
+      console.log(res.payload, "res");
+      if (typeof res.payload === "string") {
+        alert("Đơn hàng thất bại");
       } else {
         alert("Đơn hàng thành công");
         navigate("/");
       }
     },
   });
-  const handleReset = () => {
+  const handleReset = (e: any) => {
+    e.preventDefault();
     navigate(-1);
   };
   let id = useMemo(() => GenerateIdWithDate(), []);
@@ -189,7 +172,7 @@ const CheckoutPageMain = () => {
           </div>
           <div className={cx("checkoutButton")}>
             <button type="submit">Thanh toán</button>
-            {/* <button onClick={handleReset}>Hủy</button> */}
+            <button onClick={(e) => handleReset(e)}>Hủy</button>
           </div>
         </form>
       </div>

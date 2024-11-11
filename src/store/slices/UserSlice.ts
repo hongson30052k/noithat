@@ -9,7 +9,21 @@ const initialState = {
   idUser: "",
   userRender: [],
   statusPassword: false,
+  userFalseAdmin: [],
 };
+
+export const fetchGetUserFalseAdmin = createAsyncThunk(
+  "userSlice/fetchGetUserFalseAdmin",
+  async (_, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get("/users?isAdmin=false");
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
 
 export const fetchCreateUser = createAsyncThunk(
   "userSlice/fetchCreateUser",
@@ -157,6 +171,11 @@ export const UserSlice = createSlice({
       }
     );
     builder.addCase(fetchEditUser.rejected, (state, action) => {});
+    builder.addCase(fetchGetUserFalseAdmin.pending, (state, action) => {});
+    builder.addCase(fetchGetUserFalseAdmin.fulfilled, (state, action) => {
+      state.userFalseAdmin = action.payload;
+    });
+    builder.addCase(fetchGetUserFalseAdmin.rejected, (state, action) => {});
   },
 });
 
