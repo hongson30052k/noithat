@@ -17,7 +17,7 @@ function App() {
   useEffect(() => {
     const userFromLocalStorage = localStorage.getItem("user");
     console.log(userFromLocalStorage, "userFromLocalStorage");
-    if (userFromLocalStorage) {
+    if (userFromLocalStorage) { 
       dispatch(setUserFromLocalStorage(JSON.parse(userFromLocalStorage)));
     }
   }, [dispatch]);

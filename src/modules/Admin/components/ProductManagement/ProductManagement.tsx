@@ -66,7 +66,7 @@ const ProductManagement: React.FC = () => {
       price: "",
       category: 1,
       title: "",
-      frame: "",
+      frame: [],
       armrest: "",
       seatCushion: "",
       seatPlate: "",
@@ -78,7 +78,6 @@ const ProductManagement: React.FC = () => {
       name: Yup.string().required("Vui lòng nhập tên sản phẩm"),
       price: Yup.string().required("Vui lòng nhập giá sản phẩm"),
       title: Yup.string().required("Vui lòng nhập tiêu đề cho sản phẩm"),
-      frame: Yup.string().required("Vui lòng nhập thông tin"),
       armrest: Yup.string().required("Vui lòng nhập thông tin"),
       seatCushion: Yup.string().required("Vui lòng nhập thông tin"),
       seatPlate: Yup.string().required("Vui lòng nhập thông tin"),
@@ -102,6 +101,11 @@ const ProductManagement: React.FC = () => {
     await dispatch(fetchDeleteImgCart(productId));
     await dispatch(fetchCartProductAPI());
   };
+  const handleAddFrame = (e: any) => {
+    e.preventDefault();
+    const value = [...formik.values.frame, formik.values.frame];
+    console.log(value, "value");  
+  }
   useEffect(() => {
     dispatch(fetchCartProductAPI());
     dispatch(fetchGetImgProduct());
@@ -155,9 +159,17 @@ const ProductManagement: React.FC = () => {
           onChange={formik.handleChange}
           value={formik.values.category}
         >
-          <option value="1">Ghế</option>
-          <option value="2">Sofa</option>
-          <option value="3">Bàn</option>
+          <option value="1">SOFA ĐƠN & ĐÔN</option>
+          <option value="2">SOFA 2-3 CHỖ</option>
+          <option value="3">GHẾ BẬP BÊNH</option>
+          <option value="4">BÀN TRÀ VÀ TAB</option>
+          <option value="5">TỦ, KỆ VÀ TRANG TRÍ</option>
+          <option value="5">BÀN GHẾ ĂN</option>
+          <option value="5">GIƯỜNG GỖ</option>
+          <option value="5">ĐÈN TRANG TRÍ</option>
+          <option value="5">TRANH SƠN DẦU</option>
+          <option value="5">ĐỒ PHÒNG KHÁCH</option>
+          <option value="5">THẢM TRANG TRÍ</option>
         </select>
         {formik.touched.category && formik.errors.category ? (
           <div className={cx("error")}>{formik.errors.category}</div>
@@ -191,7 +203,7 @@ const ProductManagement: React.FC = () => {
                 <form>
                   {/* Khung xe */}
                   <div>
-                    <label htmlFor="frame">Khung xe</label>
+                    <label htmlFor="frame">Kích thước</label>
                     <input
                       type="text"
                       id="frame"
@@ -200,10 +212,16 @@ const ProductManagement: React.FC = () => {
                       onBlur={formik.handleBlur}
                       value={formik.values.frame}
                     />
+                    <button onClick={(e) => handleAddFrame(e)}>Thêm kích thước</button>
                     {formik.touched.frame && formik.errors.frame && (
                       <div className={cx("error")}>{formik.errors.frame}</div>
                     )}
                   </div>
+                  <div>{formik.values.frame && formik.values.frame.map((item: any) => {
+                    return (
+                      <span>{item}</span>
+                    )
+                  })}</div>
 
                   {/* Tựa tay */}
                   <div>

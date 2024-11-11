@@ -41,7 +41,7 @@ const Card = ({ data }: any) => {
           {data.title > 0 && (
             <div className={cx("card-percent-discount")}>
               <span className={cx("text-percent-discount")}>
-                {calculateDiscountPercentage(data.price, data.title)}%
+                -{calculateDiscountPercentage(data.price, data.title)}%
               </span>
             </div>
           )}
