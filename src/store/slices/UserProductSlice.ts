@@ -36,6 +36,25 @@ export const fetchCreateProductId = createAsyncThunk(
   }
 );
 
+export const fetchAddProductId = createAsyncThunk(
+  "userProductSlice/fetchAddProductId",
+  async (id: any, { rejectWithValue }) => {
+    try {
+      const res: any = await axiosInstance.get(`/cart?productId=${id}`);
+      const data = res.find((item: any) => item.productId === id);
+      console.log(data, "data");
+      if (data) {
+        const datas = { ...data, quantity: data.quantity + 1 };
+        const response: any = await axiosInstance.put(
+          `/cart/${data.id}`,
+          datas
+        );
+        return response;
+      }
+    } catch (error) {}
+  }
+);
+
 export const fetchGetUserProduct = createAsyncThunk(
   "userProductSlice/fetchGetUserProduct",
   async (idUser: any, { rejectWithValue }) => {
@@ -53,16 +72,13 @@ export const fetchGetUserProduct = createAsyncThunk(
 
 export const fetchIncrease = createAsyncThunk(
   "userProductSlice/fetchIncrease",
-  async (id: any, { rejectWithValue, getState }) => {
-    const state: any = getState();
-    const idUser = state.userState.userRender;
-    console.log(id, "id");
+  async (id: any, { rejectWithValue }) => {
     try {
-      const idForUser: any = await axiosInstance.get(`/cart`);
-      const exist = idForUser.find((item: any) => item.id === id);
-      const data = { ...exist.quantity, quantity: exist.quantity + 1 };
-      const response: any = await axiosInstance.patch(
-        `/cart/${exist.id}`,
+      const idForUser: any = await axiosInstance.get(`/cart?productId=${id}`);
+      const exist = idForUser.find((item: any) => item.productId === id);
+      const data = { ...exist, quantity: exist.quantity + 1 };
+      const response: any = await axiosInstance.put(
+        `/cart?productId=${exist.productId}`,
         data
       );
       return response;
@@ -73,19 +89,17 @@ export const fetchIncrease = createAsyncThunk(
 );
 export const fetchDecrease = createAsyncThunk(
   "userProductSlice/fetchDecrease",
-  async (id: any, { rejectWithValue, getState }) => {
-    const state: any = getState();
-    const idUser = state.userState.userRender;
-    console.log(id, "id");
+  async (id: any, { rejectWithValue }) => {
     try {
-      const idForUser: any = await axiosInstance.get(`/cart`);
-      const exist = idForUser.find((item: any) => item.id === id);
-      const data = { ...exist.quantity, quantity: exist.quantity - 1 };
+      const idForUser: any = await axiosInstance.get(`/cart?productId=${id}`);
+      const exist = idForUser.find((item: any) => item.productId === id);
+      console.log(exist.productId, "exist");
+      const data = { ...exist, quantity: exist.quantity - 1 };
       if (exist.quantity === 1) {
         return;
       }
-      const response: any = await axiosInstance.patch(
-        `/cart/${exist.id}`,
+      const response: any = await axiosInstance.put(
+        `/cart?productId=${exist.productId}`,
         data
       );
       return response;

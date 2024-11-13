@@ -14,16 +14,16 @@ import { useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
 
 const ProfileShopping = () => {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
   let result = 0;
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { idUser } = useSelector((state: RootState) => state.userState);
   const { userProducts, action } = useSelector(
     (state: RootState) => state.userProductState
   );
+  console.log(userProducts, "userProducts");
   const deleteAllCart = async () => {
-    const res: any = await dispatch(fetchDeleteUserProduct(idUser));
-    console.log(res, "res");
+    const res: any = await dispatch(fetchDeleteUserProduct(user.id));
   };
   const handleIncrease = (id: any) => {
     dispatch(fetchIncrease(id));
@@ -35,7 +35,7 @@ const ProfileShopping = () => {
     await dispatch(fetchDeleteProduct(id));
   };
   useEffect(() => {
-    dispatch(fetchGetUserProduct(idUser));
+    dispatch(fetchGetUserProduct(user.id));
   }, [action, dispatch]);
 
   if (userProducts && userProducts.length > 0) {
@@ -67,16 +67,20 @@ const ProfileShopping = () => {
                 <h3>{item.product.name}</h3>
                 <div className={cx("price-info")}>
                   <p className={cx("original-price")}>
-                    {item.product.price} VND
+                    {item.product.original_price} VND
                   </p>
                   <p className={cx("discounted-price")}>
-                    {item.product.price} VND
+                    {item.product.discounted_price} VND
                   </p>
                 </div>
                 <div className={cx("item-quantity")}>
-                  <button onClick={() => handleDecrease(item.id)}>-</button>
+                  <button onClick={() => handleDecrease(item.productId)}>
+                    -
+                  </button>
                   <span>{item.quantity}</span>
-                  <button onClick={() => handleIncrease(item.id)}>+</button>
+                  <button onClick={() => handleIncrease(item.productId)}>
+                    +
+                  </button>
                 </div>
                 <button
                   className={cx("remove-item")}

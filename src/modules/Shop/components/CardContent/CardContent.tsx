@@ -24,8 +24,15 @@ const CardContent = () => {
   });
   console.log(data, "data");
   useEffect(() => {
-    dispatch(fetchCartProductAPI());
-    dispatch(fetchGetImgProduct());
+    const fetchData = async () => {
+      try {
+        await dispatch(fetchCartProductAPI());
+        await dispatch(fetchGetImgProduct());
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
   }, []);
   return (
     <div>

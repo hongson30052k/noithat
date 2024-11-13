@@ -7,9 +7,12 @@ import {
   fetchAddImgProduct,
   fetchAddToCart,
   fetchCartProductAPI,
+  fetchColor,
   fetchDeleteCart,
   fetchDeleteImgCart,
+  fetchGetCountry,
   fetchGetImgProduct,
+  fetchProductOptions,
 } from "../../../../store/slices/CartProductSlice";
 import { RootState } from "../../../../store/store";
 import styles from "./ProductManagement.module.scss";
@@ -28,6 +31,9 @@ const ProductManagement: React.FC = () => {
   const [imgProduct, setImgProduct] = useState<any>(null);
   const [error, setError] = useState<any>("");
   const [showModal, setShowModal] = useState(false);
+  const [size, setSize] = useState<any>([]);
+  const [selectColor, setSelectColor] = useState<any>([]);
+  const [valueManufacturer, setValueManufacturer] = useState<any>([]);
   const handleAddImage = (files: { base64: string }) => {
     if (!isValidBase64Image(files.base64)) {
       setError("File bạn chọn không phải là hình ảnh hợp lệ.");
@@ -50,49 +56,55 @@ const ProductManagement: React.FC = () => {
     await dispatch(fetchCartProductAPI());
     setImgProduct(null);
   };
-  const { card, cartImg, status } = useSelector(
+  const { card, cartImg, status, color, country, productOptions } = useSelector(
     (state: RootState) => state.cartProductState
   );
+  const onModalOpen = () => {
+    setIsModalOpen(true);
+  };
   console.log(card, "data");
   console.log(cartImg, "cartImg");
   const data = card.map((item: any) => {
     const item1 = cartImg?.find((item2: any) => item2?.id === item?.id);
     return item1 ? { ...item, ...item1 } : item;
   });
-  console.log(data, "data");
-  const formik = useFormik({
+  console.log(country, "country");
+  const formik: any = useFormik({
     initialValues: {
       name: "",
-      price: "",
+      original_price: "",
       category: 1,
-      title: "",
-      frame: [],
-      armrest: "",
-      seatCushion: "",
-      seatPlate: "",
-      hydraulic: "",
-      chairLeg: "",
-      wheels: "",
+      frameTo: 0,
+      frameFrom: 0,
+      discounted_price: "",
+      country: "",
+      color: "",
+      accessories: "",
+      brandName: "",
+      brandDescription: "",
+      manufacturerName: "",
+      manufacturerInfo: "",
+      manufacturerProduct: "",
+      inputDescription: "",
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().required("Vui lòng nhập tên sản phẩm"),
-      price: Yup.string().required("Vui lòng nhập giá sản phẩm"),
-      title: Yup.string().required("Vui lòng nhập tiêu đề cho sản phẩm"),
-      armrest: Yup.string().required("Vui lòng nhập thông tin"),
-      seatCushion: Yup.string().required("Vui lòng nhập thông tin"),
-      seatPlate: Yup.string().required("Vui lòng nhập thông tin"),
-      hydraulic: Yup.string().required("Vui lòng nhập thông tin"),
-      chairLeg: Yup.string().required("Vui lòng nhập thông tin"),
-      wheels: Yup.string().required("Vui lòng nhập thông tin"),
+      original_price: Yup.string().required("Vui lòng nhập giá sản phẩm"),
+      category: Yup.number().required("Vui lòng chọn danh mục"),
     }),
     onSubmit: (values) => {
       if (!imgProduct) return;
       const value: any = {
         ...values,
+        size: size,
+        color: selectColor,
+        manufacturerProducts: valueManufacturer,
         id: generateUUID2(),
       };
       handleAddProduct(value);
+      console.log(value, "value");
       formik.resetForm();
+      console.log(values);
     },
   });
   const handDelete = async (productId: string) => {
@@ -103,12 +115,69 @@ const ProductManagement: React.FC = () => {
   };
   const handleAddFrame = (e: any) => {
     e.preventDefault();
-    const value = [...formik.values.frame, formik.values.frame];
-    console.log(value, "value");  
-  }
+
+    if (formik.values.frameFrom && formik.values.frameTo) {
+      const from = formik.values.frameFrom;
+      const to = formik.values.frameTo;
+
+      if (from < to) {
+        const string: any = `${from}cm * ${to}cm`;
+        setSize((preSize: any) => [...preSize, string]);
+      } else {
+        return (formik.errors.frameFrom =
+          "Giá trị từ phải nhỏ hơn giá trị đến");
+      }
+    }
+  };
+  const handDeleteSize = (index: number) => {
+    const updateSize = [...size];
+    updateSize.splice(index, 1);
+    setSize(updateSize);
+  };
+  const handAddColor = (e: any) => {
+    e.preventDefault();
+    if (formik.values.color) {
+      const string: any = formik.values.color;
+      setSelectColor((preSize: any) => [...preSize, string]);
+    }
+  };
+  const handDeleteColor = (index: number) => {
+    const updateSize = [...selectColor];
+    updateSize.splice(index, 1);
+    setSelectColor(updateSize);
+  };
+  const handleAddInfo = (e: any) => {
+    e.preventDefault();
+    const string: any = `${formik.values.manufacturerProduct}: ${formik.values.inputDescription}`;
+    if (
+      formik.values.manufacturerProduct === "" ||
+      formik.values.inputDescription === ""
+    ) {
+      return;
+    } else {
+      setValueManufacturer((preSize: any) => [...preSize, string]);
+      formik.values.manufacturerProduct = "";
+      formik.values.inputDescription = "";
+    }
+  };
+  const handleDeleteManufacturer = (index: number) => {
+    const updateSize = [...valueManufacturer];
+    updateSize.splice(index, 1);
+    setValueManufacturer(updateSize);
+  };
   useEffect(() => {
-    dispatch(fetchCartProductAPI());
-    dispatch(fetchGetImgProduct());
+    const fetchData = async () => {
+      try {
+        await dispatch(fetchCartProductAPI());
+        await dispatch(fetchGetImgProduct());
+        await dispatch(fetchColor());
+        await dispatch(fetchGetCountry());
+        await dispatch(fetchProductOptions());
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
   }, [dispatch, status]);
   return (
     <div className={cx("data-management")}>
@@ -127,30 +196,30 @@ const ProductManagement: React.FC = () => {
         {formik.touched.name && formik.errors.name ? (
           <div className={cx("error")}> *{formik.errors.name}</div>
         ) : null}
-        <label htmlFor="price">Giá sản phẩm</label>
+        <label htmlFor="original_price">Giá sản phẩm</label>
         <input
           type="number"
-          id="price"
-          name="price"
+          id="original_price"
+          name="original_price"
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          value={formik.values.price}
+          value={formik.values.original_price}
           placeholder="Nhập giá sản phẩm"
         />
-        {formik.touched.price && formik.errors.price ? (
-          <div className={cx("error")}> *{formik.errors.price}</div>
+        {formik.touched.original_price && formik.errors.original_price ? (
+          <div className={cx("error")}> *{formik.errors.original_price}</div>
         ) : null}
-        <label htmlFor="title">Giảm giá</label>
+        <label htmlFor="discounted_price">Giảm giá</label>
         <input
           type="text"
-          id="title"
-          name="title"
+          id="discounted_price"
+          name="discounted_price"
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          value={formik.values.title}
+          value={formik.values.discounted_price}
         />
-        {formik.touched.title && formik.errors.title ? (
-          <div className={cx("error")}>{formik.errors.title}</div>
+        {formik.touched.discounted_price && formik.errors.discounted_price ? (
+          <div className={cx("error")}>{formik.errors.discounted_price}</div>
         ) : null}
         <label htmlFor="category">Danh mục sản phẩm</label>
         <select
@@ -159,17 +228,12 @@ const ProductManagement: React.FC = () => {
           onChange={formik.handleChange}
           value={formik.values.category}
         >
-          <option value="1">SOFA ĐƠN & ĐÔN</option>
-          <option value="2">SOFA 2-3 CHỖ</option>
-          <option value="3">GHẾ BẬP BÊNH</option>
-          <option value="4">BÀN TRÀ VÀ TAB</option>
-          <option value="5">TỦ, KỆ VÀ TRANG TRÍ</option>
-          <option value="5">BÀN GHẾ ĂN</option>
-          <option value="5">GIƯỜNG GỖ</option>
-          <option value="5">ĐÈN TRANG TRÍ</option>
-          <option value="5">TRANH SƠN DẦU</option>
-          <option value="5">ĐỒ PHÒNG KHÁCH</option>
-          <option value="5">THẢM TRANG TRÍ</option>
+          <option value="">-- Chọn danh mục --</option>
+          {productOptions?.map((item: any) => (
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
+          ))}
         </select>
         {formik.touched.category && formik.errors.category ? (
           <div className={cx("error")}>{formik.errors.category}</div>
@@ -185,158 +249,8 @@ const ProductManagement: React.FC = () => {
           />
         )}
         {error && <div className={cx("error")}>{error}</div>}
-        <div>
-          <button onClick={() => setIsModalOpen(true)}>
-            Thông tin chi tiết
-          </button>
 
-          {isModalOpen && (
-            <div className={cx("modal-open-description")}>
-              <div className={cx("modal-content")}>
-                <div
-                  onClick={() => setIsModalOpen(false)}
-                  className={cx("close-modal")}
-                >
-                  X
-                </div>
-                <h2>Thông tin sản phẩm</h2>
-                <form>
-                  {/* Khung xe */}
-                  <div>
-                    <label htmlFor="frame">Kích thước</label>
-                    <input
-                      type="text"
-                      id="frame"
-                      name="frame"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.frame}
-                    />
-                    <button onClick={(e) => handleAddFrame(e)}>Thêm kích thước</button>
-                    {formik.touched.frame && formik.errors.frame && (
-                      <div className={cx("error")}>{formik.errors.frame}</div>
-                    )}
-                  </div>
-                  <div>{formik.values.frame && formik.values.frame.map((item: any) => {
-                    return (
-                      <span>{item}</span>
-                    )
-                  })}</div>
-
-                  {/* Tựa tay */}
-                  <div>
-                    <label htmlFor="armrest">Tựa tay</label>
-                    <input
-                      type="text"
-                      id="armrest"
-                      name="armrest"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.armrest}
-                    />
-                    {formik.touched.armrest && formik.errors.armrest && (
-                      <div className={cx("error")}>{formik.errors.armrest}</div>
-                    )}
-                  </div>
-
-                  {/* Đệm ngồi */}
-                  <div>
-                    <label htmlFor="seatCushion">Đệm ngồi</label>
-                    <input
-                      type="text"
-                      id="seatCushion"
-                      name="seatCushion"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.seatCushion}
-                    />
-                    {formik.touched.seatCushion &&
-                      formik.errors.seatCushion && (
-                        <div className={cx("error")}>
-                          {formik.errors.seatCushion}
-                        </div>
-                      )}
-                  </div>
-
-                  {/* Mân ghế */}
-                  <div>
-                    <label htmlFor="seatPlate">Mân ghế</label>
-                    <input
-                      type="text"
-                      id="seatPlate"
-                      name="seatPlate"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.seatPlate}
-                    />
-                    {formik.touched.seatPlate && formik.errors.seatPlate && (
-                      <div className={cx("error")}>
-                        {formik.errors.seatPlate}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Thủy lực */}
-                  <div>
-                    <label htmlFor="hydraulic">Thủy lực</label>
-                    <input
-                      type="text"
-                      id="hydraulic"
-                      name="hydraulic"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.hydraulic}
-                    />
-                    {formik.touched.hydraulic && formik.errors.hydraulic && (
-                      <div className={cx("error")}>
-                        {formik.errors.hydraulic}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Khung chân */}
-                  <div>
-                    <label htmlFor="chairLeg">Khung chân</label>
-                    <input
-                      type="text"
-                      id="chairLeg"
-                      name="chairLeg"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.chairLeg}
-                    />
-                    {formik.touched.chairLeg && formik.errors.chairLeg && (
-                      <div className={cx("error")}>
-                        {formik.errors.chairLeg}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Bánh xe */}
-                  <div>
-                    <label htmlFor="wheels">Bánh xe</label>
-                    <input
-                      type="text"
-                      id="wheels"
-                      name="wheels"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.wheels}
-                    />
-                    {formik.touched.wheels && formik.errors.wheels && (
-                      <div className={cx("error")}>{formik.errors.wheels}</div>
-                    )}
-                  </div>
-                  <div style={{ marginTop: "20px" }}>
-                    <button onClick={() => setIsModalOpen(false)}>
-                      Lưu thông tin
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-        </div>
+        <br />
         <Button
           variant="contained"
           color="primary"
@@ -353,6 +267,291 @@ const ProductManagement: React.FC = () => {
           Thêm Sản phẩm
         </Button>
       </form>
+      <div>
+        <button onClick={() => onModalOpen()}>Thêm thông tin chi tiết</button>
+      </div>
+      {isModalOpen && (
+        <div className={cx("modal-open-description")}>
+          <div className={cx("modal-content")}>
+            <div
+              onClick={() => setIsModalOpen(false)}
+              className={cx("close-modal")}
+            >
+              X
+            </div>
+            <h2>THÔNG TIN SẢN PHẨM</h2>
+            <form>
+              <div>
+                <label htmlFor="frameFrom">Kích thước từ</label>
+                <select
+                  id="frameFrom"
+                  name="frameFrom"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.frameFrom}
+                  className="size-select-dropdown"
+                >
+                  <option value="">Chọn kích thước từ</option>
+                  <option value="10">10 cm</option>
+                  <option value="20">20 cm</option>
+                  <option value="30">30 cm</option>
+                  <option value="40">40 cm</option>
+                  <option value="50">50 cm</option>
+                  <option value="60">60 cm</option>
+                  <option value="70">70 cm</option>
+                  <option value="80">80 cm</option>
+                  <option value="90">90 cm</option>
+                  <option value="100">100 cm</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="frameTo">Kích thước đến</label>
+                <select
+                  id="frameTo"
+                  name="frameTo"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.frameTo}
+                  className="size-select-dropdown"
+                >
+                  <option value="">Chọn kích thước đến</option>
+                  <option value="20">20 cm</option>
+                  <option value="30">30 cm</option>
+                  <option value="40">40 cm</option>
+                  <option value="50">50 cm</option>
+                  <option value="60">60 cm</option>
+                  <option value="70">70 cm</option>
+                  <option value="80">80 cm</option>
+                  <option value="90">90 cm</option>
+                  <option value="100">100 cm</option>
+                </select>
+              </div>
+
+              <button onClick={(e) => handleAddFrame(e)}>
+                Thêm kích thước
+              </button>
+
+              {formik.touched.frameFrom && formik.errors.frameFrom && (
+                <div className={cx("error")}>{formik.errors.frameFrom}</div>
+              )}
+
+              {formik.touched.frameTo && formik.errors.frameTo && (
+                <div className={cx("error")}>{formik.errors.frameTo}</div>
+              )}
+              <div className={cx("size-list")}>
+                <h3>Danh sách kích thước:</h3>
+                <div className={cx("size-render")}>
+                  {size.map((size: any, index: number) => (
+                    <span key={index} onClick={() => handDeleteSize(index)}>
+                      {size} <span className="remove-size-text">[Xóa]</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tựa tay */}
+              <div>
+                <label htmlFor="color">Màu sắc</label>
+                <select
+                  id="color"
+                  name="color"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.color}
+                >
+                  <option value="">Chọn màu sắc</option>
+                  {color && color.length > 0 ? (
+                    color.map((color: any, index: number) => (
+                      <option key={index} value={color.hex}>
+                        {color.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>Không có màu sắc nào</option>
+                  )}
+                </select>
+                <button onClick={(e) => handAddColor(e)}>Thêm màu</button>
+
+                {formik.touched.color && formik.errors.color && (
+                  <div className={cx("error")}>{formik.errors.color}</div>
+                )}
+              </div>
+              {selectColor && selectColor.length > 0 && (
+                <div className={cx("color-list")}>
+                  <h3>Danh sách màu sắc:</h3>
+                  <div className={cx("color-render")}>
+                    {selectColor.map((color: any, index: number) => (
+                      <span
+                        style={{ backgroundColor: color }}
+                        key={index}
+                        onClick={() => handDeleteColor(index)}
+                      >
+                        {color}
+                        <span className="remove-size-text">[Xóa]</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Đệm ngồi */}
+              <div>
+                <label htmlFor="country">xuất xứ</label>
+                <select
+                  id="country"
+                  name="country"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.country}
+                >
+                  <option value="">Chọn xuất xưởng</option>
+                  {country?.map((country: any, index: number) => (
+                    <option key={index} value={country.name}>
+                      {country.name}
+                    </option>
+                  ))}
+                </select>
+                {formik.touched.seatCushion && formik.errors.seatCushion && (
+                  <div className={cx("error")}>{formik.errors.seatCushion}</div>
+                )}
+              </div>
+              <div>
+                <label htmlFor="accessories">Chọn phụ kiện đi kèm:</label>
+                <select
+                  id="accessories"
+                  name="accessories"
+                  value={formik.values.accessories}
+                  onChange={formik.handleChange}
+                >
+                  <option value="gối-tựa">Gối tựa</option>
+                  <option value="khăn-trải-sofa">Khăn trải sofa</option>
+                  <option value="bộ-chân-thay-thế">Bộ chân thay thế</option>
+                  <option value="đệm-ngồi">Đệm ngồi</option>
+                  <option value="chăn-phủ">Chăn phủ</option>
+                </select>
+                <p>Phụ kiện: {formik.values.accessories}</p>
+              </div>
+
+              <div>
+                <label htmlFor="brandName">Thương hiệu:</label>
+                <input
+                  type="text"
+                  id="brandName"
+                  name="brandName"
+                  onChange={formik.handleChange}
+                  value={formik.values.brandName}
+                  placeholder="Nhập tên thương hiệu"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="brandDescription">Mô tả thương hiệu:</label>
+                <input
+                  type="text"
+                  id="brandDescription"
+                  name="brandDescription"
+                  placeholder="Nhập mô tả về thương hiệu"
+                  value={formik.values.brandDescription}
+                  onChange={formik.handleChange}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="manufacturerName">Nhà sản xuất:</label>
+                <input
+                  type="text"
+                  id="manufacturerName"
+                  name="manufacturerName"
+                  value={formik.values.manufacturerName}
+                  onChange={formik.handleChange}
+                  placeholder="Nhập tên nhà sản xuất"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="manufacturerInfo">
+                  Thông tin nhà sản xuất:
+                </label>
+                <input
+                  id="manufacturerInfo"
+                  name="manufacturerInfo"
+                  value={formik.values.manufacturerInfo}
+                  onChange={formik.handleChange}
+                  placeholder="Nhập thông tin về nhà sản xuất"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="manufacturerProduct">
+                  Nhập thông tin mô tả sản phẩm
+                </label>
+                <select
+                  id="manufacturerProduct"
+                  name="manufacturerProduct"
+                  value={formik.values.manufacturerProduct}
+                  onChange={formik.handleChange}
+                >
+                  <option value="">Chọn mô tả</option>
+                  <option value="Chất liệu">Chất liệu</option>
+                  <option value="Công dụng">Công dụng</option>
+                  <option value="Thiết kế">Thiết kế</option>
+                  <option value="Tính năng đặc biệt">Tính năng đặc biệt</option>
+                  <option value="Thông tin bảo hành">Thông tin bảo hành</option>
+                </select>
+                <input
+                  type="text"
+                  id="inputDescription"
+                  name="inputDescription"
+                  placeholder="Nhập thông tin về sản phẩm"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.inputDescription}
+                />
+                <Button
+                  className={cx("add-info")}
+                  onClick={(e) => handleAddInfo(e)}
+                >
+                  Add thông tin
+                </Button>
+                {formik.touched.manufacturerProduct &&
+                  formik.errors.manufacturerProduct && (
+                    <div className={cx("error")}>
+                      {formik.errors.inputDescription}
+                    </div>
+                  )}
+                <div>
+                  <p
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "18px",
+                      margin: "0 auto",
+                      display: "block",
+                    }}
+                  >
+                    Thông tin mô tả sản phẩm đã thêm
+                  </p>
+                  {valueManufacturer?.map(
+                    (manufacturer: any, index: number) => (
+                      <div key={index} className={cx("manufacturer-value")}>
+                        <p>{manufacturer}</p>
+                        <Button onClick={() => handleDeleteManufacturer(index)}>
+                          Xóa
+                        </Button>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+              <div style={{ marginTop: "20px" }}>
+                <button onClick={() => setIsModalOpen(false)}>
+                  Lưu thông tin
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       <div style={{ marginTop: "16px" }}>
         <table style={{ width: "100%" }} className={cx("data-table")}>
           <thead>
@@ -369,10 +568,9 @@ const ProductManagement: React.FC = () => {
               <tr key={index}>
                 <th>{data.id}</th>
                 <th>{data.name}</th>
-                <th>{data.price}</th>
-                <th>{data.title}</th>
+                <th>{data.original_price}</th>
+                <th>{data.discounted_price}</th>
                 <th>{data.category}</th>
-
                 <th>
                   <img
                     src={data.img}
@@ -398,32 +596,69 @@ const ProductManagement: React.FC = () => {
                         <table>
                           <tbody>
                             <tr>
-                              <th>Khung xe</th>
-                              <td>{data.chair}</td>
+                              <th>Color</th>
+                              <td>
+                                {data?.color.map((color: any) => {
+                                  return (
+                                    <span
+                                      style={{
+                                        marginRight: "10px",
+                                        backgroundColor: color,
+                                      }}
+                                    >
+                                      {color}
+                                    </span>
+                                  );
+                                })}
+                              </td>
                             </tr>
                             <tr>
-                              <th>Mô tả</th>
-                              <td>{data.description}</td>
+                              <th>xuất xứ</th>
+                              <td>{data.country}</td>
                             </tr>
                             <tr>
-                              <th>Mân ghế</th>
-                              <td>{data.seatPlate}</td>
+                              <th>size</th>
+                              <td>
+                                {data?.size.map((size: any) => {
+                                  return (
+                                    <span
+                                      style={{
+                                        marginRight: "10px",
+                                      }}
+                                    >
+                                      {size}
+                                    </span>
+                                  );
+                                })}
+                              </td>
                             </tr>
                             <tr>
-                              <th>Thủy lực</th>
-                              <td>{data.hydraulic}</td>
+                              <th>Phụ kiện đi kèm</th>
+                              <td>{data.accessories}</td>
                             </tr>
                             <tr>
-                              <th>Khung chân</th>
-                              <td>{data.chairLeg}</td>
+                              <th>Thương hiệu</th>
+                              <td>{data.brandName}</td>
                             </tr>
                             <tr>
-                              <th>Bánh xe</th>
-                              <td>{data.wheels}</td>
+                              <th>Mô tả thương hiệu</th>
+                              <td>{data.brandDescription}</td>
                             </tr>
                             <tr>
-                              <th>Đệm ngồi</th>
-                              <td>{data.seatCushion}</td>
+                              <th>Nhà sản xuất</th>
+                              <td>{data.manufacturerName}</td>
+                            </tr>
+                            <tr>
+                              <th>Thông tin nhà sản xuất</th>
+                              <td>{data.manufacturerInfo}</td>
+                            </tr>
+                            <tr>
+                              <th>Thống tin mô tả san phẩm</th>
+                              <td>
+                                {data?.manufacturerProducts.map((item: any) => {
+                                  return <p>{item}</p>;
+                                })}
+                              </td>
                             </tr>
                           </tbody>
                         </table>

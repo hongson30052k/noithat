@@ -351,3 +351,193 @@ button:hover {
 .data-management-title:hover:after {
   transform: scaleX(1); /* Khi hover, dãn đầy chiều ngang */
 }
+.size-list {
+  background-color: #f9f9f9; /* Màu nền sáng cho khối chứa */
+  padding: 20px;
+  border-radius: 8px; /* Bo góc */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ cho khối */
+  margin-top: 20px;
+
+  h3 {
+    font-size: 1.5rem; /* Cỡ chữ tiêu đề */
+    font-weight: 600;
+    color: #333; /* Màu chữ tối */
+    margin-bottom: 15px;
+    text-transform: uppercase; /* Chữ in hoa */
+    letter-spacing: 1px; /* Khoảng cách giữa các chữ cái */
+    text-align: center;
+  }
+
+  .size-render {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Khoảng cách giữa các phần tử */
+    justify-content: center; /* Căn giữa các phần tử */
+  }
+
+  span {
+    font-size: 1.125rem; /* Cỡ chữ của các phần tử trong danh sách */
+    color: #444; /* Màu chữ hơi nhạt so với tiêu đề */
+    background-color: #fff; /* Nền trắng cho mỗi mục */
+    padding: 8px 15px; /* Khoảng cách xung quanh chữ */
+    border-radius: 20px; /* Bo góc cho các mục */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+    cursor: pointer; /* Con trỏ khi hover vào mục */
+    position: relative; /* Cần thiết để đặt vị trí cho nút xóa */
+    transition: all 0.3s ease; /* Hiệu ứng chuyển động khi hover */
+
+    &:hover {
+      background-color: #1976d2; /* Màu nền khi hover */
+      color: white; /* Màu chữ trắng khi hover */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Tăng độ bóng khi hover */
+      transform: translateY(-3px); /* Hiệu ứng di chuyển nhẹ lên */
+    }
+
+    &:active {
+      transform: translateY(1px); /* Khi nhấn, mục sẽ chìm nhẹ */
+    }
+
+    /* Hiển thị icon Xóa khi hover vào */
+    &::after {
+      content: "Xóa"; /* Nội dung chữ sẽ là 'Xóa' */
+      position: absolute;
+      top: -18px;
+      right: -10px;
+      font-size: 0.875rem;
+      color: #e74c3c;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Hiển thị chữ "Xóa" khi hover */
+    &:hover::after {
+      opacity: 1; /* Hiển thị khi hover */
+      pointer-events: auto;
+    }
+  }
+}
+
+/* Định dạng chung cho phần color-list */
+.color-list {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 10px 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.color-list h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Mảng các màu sắc được render */
+.color-render {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.color-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.2s ease;
+}
+
+/* Khi hover qua mỗi item */
+.color-item:hover {
+  transform: translateY(-3px);
+  background-color: #f2f2f2;
+}
+
+/* Định dạng cho hình vuông màu sắc */
+.color-box {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+/* Tên màu sắc */
+.color-name {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Nút xóa */
+.remove-size-text {
+  font-size: 12px;
+  color: #f44336;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.remove-size-text:hover {
+  color: #d32f2f;
+}
+.manufacturer-value {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.manufacturer-value p {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+  margin: 0;
+  text-align: left;
+}
+
+.manufacturer-value button {
+  background-color: #ff4d4d;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.manufacturer-value button:hover {
+  background-color: #ff3333;
+  transform: translateY(-2px);
+}
+
+.manufacturer-value:hover {
+  background-color: #f1f1f1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-info {
+  display: inline-block;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #ff6347;
+
+  // Hiệu ứng hover
+  &:hover {
+    background-color: #ff6347;
+    transform: translateY(-2px);
+  }
+}

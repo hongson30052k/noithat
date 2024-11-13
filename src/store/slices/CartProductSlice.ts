@@ -9,6 +9,9 @@ interface IInitialState {
   cartImg: any[];
   cardImg: any[];
   status: boolean;
+  color: any[];
+  country: any[];
+  productOptions: any[];
 }
 
 const initialState: IInitialState = {
@@ -18,6 +21,9 @@ const initialState: IInitialState = {
   cartImg: [],
   cardImg: [],
   status: false,
+  color: [],
+  country: [],
+  productOptions: [],
 };
 export const fetchCartProductAPI = createAsyncThunk(
   "cartProductSlice/fetchCartProductAPI",
@@ -34,12 +40,48 @@ export const fetchCartProductAPI = createAsyncThunk(
     }
   }
 );
+export const fetchColor = createAsyncThunk(
+  "userProductSlice/fetchColor",
+  async (_, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get("/color");
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
 export const fetchGetImgProduct = createAsyncThunk(
   "userProductSlice/fetchGetImgProduct",
   async (_, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
       const res: any = await axiosInstance.get("/imgProduct");
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchProductOptions = createAsyncThunk(
+  "userProductSlice/fetchProductOptions",
+  async (_, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get("/productOptions");
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchGetCountry = createAsyncThunk(
+  "userProductSlice/fetchGetCountry",
+  async (_, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get("/asianCountries");
       return res;
     } catch (error) {
       rejectWithValue(error);
@@ -70,6 +112,7 @@ export const fetchAddImgProduct = createAsyncThunk(
     }
   }
 );
+
 export const fetchProductApi = createAsyncThunk(
   "cartProductSlice/fetchProductApi",
   async (id: string, thunkAPI) => {
@@ -202,6 +245,27 @@ export const cartProductSlice = createSlice({
       }
     );
     builder.addCase(fetchGetImgProductId.rejected, (state, action) => {});
+    builder.addCase(fetchColor.pending, (state, action) => {});
+    builder.addCase(
+      fetchColor.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.color = action.payload;
+      }
+    );
+    builder.addCase(fetchColor.rejected, (state, action) => {});
+    builder.addCase(fetchGetCountry.pending, (state, action) => {});
+    builder.addCase(
+      fetchGetCountry.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.country = action.payload;
+      }
+    );
+    builder.addCase(fetchGetCountry.rejected, (state, action) => {});
+    builder.addCase(fetchProductOptions.pending, (state, action) => {});
+    builder.addCase(fetchProductOptions.fulfilled, (state, action) => {
+      state.productOptions = action.payload;
+    });
+    builder.addCase(fetchProductOptions.rejected, (state, action) => {});
   },
 });
 

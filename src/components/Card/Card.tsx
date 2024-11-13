@@ -38,10 +38,15 @@ const Card = ({ data }: any) => {
     <>
       {data && (
         <div className={cx("card")}>
-          {data.title > 0 && (
+          {data.discounted_price > 0 && (
             <div className={cx("card-percent-discount")}>
               <span className={cx("text-percent-discount")}>
-                -{calculateDiscountPercentage(data.price, data.title)}%
+                -
+                {calculateDiscountPercentage(
+                  data.original_price,
+                  data.discounted_price
+                )}
+                %
               </span>
             </div>
           )}
@@ -56,8 +61,10 @@ const Card = ({ data }: any) => {
             <span className={cx("card-title")}>{data.name}</span>
             <span className={cx("card-text")}>{data.description}</span>
             <div className={cx("card-price-container")}>
-              <span className={cx("card-price")}>{data.price}</span>
-              <span className={cx("card-price-discount")}>{data.title}</span>
+              <span className={cx("card-price")}>{data.discounted_price}</span>
+              <span className={cx("card-price-discount")}>
+                {data.original_price}
+              </span>
             </div>
           </div>
           <div className={cx("card-button")}>
