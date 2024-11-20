@@ -1,11 +1,13 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { axiosInstanceUser } from "../../api/axiosClientUser";
 import { axiosInstance } from "../../api/axiosClient";
+import { setLoading } from "./CartProductSlice";
 
 const initialState = {
   users: [],
   idUserProduct: [],
   userImgAdmin: [],
+  loading: false,
 };
 
 export const fetchCreateUserLogin = createAsyncThunk(
@@ -59,7 +61,11 @@ export const fetchGetUserLogin = createAsyncThunk(
 export const UserLoginSlice = createSlice({
   name: "UserLoginSlice",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    setLoadingUser: (state, action) => {
+      state.loading = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchCreateUserLogin.pending, (state, action) => {});
     builder.addCase(
@@ -70,12 +76,15 @@ export const UserLoginSlice = createSlice({
     );
     builder.addCase(fetchCreateUserLogin.rejected, (state, action) => {});
 
-    builder.addCase(fetchGetUserLogin.pending, (state, action) => {});
+    builder.addCase(fetchGetUserLogin.pending, (state, action) => {
+      state.loading = true;
+    });
     builder.addCase(
       fetchGetUserLogin.fulfilled,
       (state: any, action: PayloadAction<any>) => {
         state.idUserProduct = action.payload;
         // localStorage.setItem("users", action.payload);
+        state.loading = false;
       }
     );
     builder.addCase(fetchGetUserLogin.rejected, (state, action) => {});
@@ -90,5 +99,5 @@ export const UserLoginSlice = createSlice({
     builder.addCase(fetchGetImgFalseAdmin.rejected, (state, action) => {});
   },
 });
-export const {} = UserLoginSlice.actions;
+export const { setLoadingUser } = UserLoginSlice.actions;
 export default UserLoginSlice.reducer;

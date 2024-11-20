@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "./ProfileSidebar.module.scss";
 import classNames from "classnames/bind";
 import { RootState } from "../../../../store/store";
@@ -6,14 +6,21 @@ import { useState } from "react";
 import ProfileEdit from "../ProfileEdit/ProfileEdit";
 import ProfileShopping from "../ProfileShopping/ProfileShopping";
 import ProfileCartOrder from "../ProfileCartOrder/ProfileCartOrder";
+import { setLoadings } from "../../../../store/slices/UserProductSlice";
+import { setLoadingUser } from "../../../../store/slices/UserLoginSlice";
 const cx = classNames.bind(styles);
 
 const ProfileSidebar = () => {
+  const dispatch = useDispatch();
   const userProduct = useSelector(
     (state: RootState) => state.UserLoginState.idUserProduct
   );
-
   const { isAdmin } = useSelector((state: RootState) => state.userState);
+  if (!isAdmin && !userProduct) {
+    dispatch(setLoadingUser(true));
+  } else {
+    dispatch(setLoadingUser(false));
+  }
   const [idContent, setIdContent] = useState(1);
   return (
     <>
@@ -21,7 +28,7 @@ const ProfileSidebar = () => {
         <h2>Menu</h2>
         <ul>
           <li>
-            {userProduct.map((item: any) => {
+            {userProduct?.map((item: any) => {
               return (
                 <div key={item.id} className={cx("item")}>
                   <a>{item.myname}</a>

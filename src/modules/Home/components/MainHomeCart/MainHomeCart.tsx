@@ -3,16 +3,20 @@ import Card from "../../../../components/Card/Card";
 import { RootState } from "../../../../store/store";
 import styles from "./MainHomeCart.module.scss";
 import classNames from "classnames/bind";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   fetchCartProductAPI,
   fetchGetImgProduct,
 } from "../../../../store/slices/CartProductSlice";
+import { Box, CircularProgress } from "@mui/material";
+import { loadavg } from "os";
 
 const cx = classNames.bind(styles);
 
 const MainHomeCart = () => {
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
+  const [currentIndex, setCurrentIndex] = useState(8);
   const { card, cartImg } = useSelector(
     (state: RootState) => state.cartProductState
   );
@@ -23,11 +27,15 @@ const MainHomeCart = () => {
     return item1 ? { ...item, ...item1 } : item;
   });
   console.log(data, "data");
+  const showMore = () => {
+    setCurrentIndex((prevIndex) => prevIndex + 8);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
         await dispatch(fetchCartProductAPI());
         await dispatch(fetchGetImgProduct());
+        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -38,9 +46,24 @@ const MainHomeCart = () => {
     <div className={cx("main-home-cart")}>
       <span className={cx("title")}>Our Products</span>
       <div className={cx("main-home-cart-content")}>
-        {data && data.map((data) => <Card key={data.id} data={data} />)}
+        {data &&
+          data
+            .slice(0, currentIndex)
+            .map((data) => <Card key={data.id} data={data} />)}
       </div>
-      <button className={cx("show-all")}>Show More</button>
+      <Box
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "20px",
+        }}
+      >
+        {loading ? <CircularProgress /> : <div></div>}
+      </Box>
+      <button className={cx("show-all")} onClick={showMore}>
+        Show More
+      </button>
     </div>
   );
 };

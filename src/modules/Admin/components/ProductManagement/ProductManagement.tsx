@@ -7,18 +7,23 @@ import {
   fetchAddImgProduct,
   fetchAddToCart,
   fetchCartProductAPI,
+  fetchCartProductAPIPage,
   fetchColor,
   fetchDeleteCart,
   fetchDeleteImgCart,
   fetchGetCountry,
   fetchGetImgProduct,
+  fetchProductApi,
   fetchProductOptions,
+  setShowModalEdit,
 } from "../../../../store/slices/CartProductSlice";
 import { RootState } from "../../../../store/store";
 import styles from "./ProductManagement.module.scss";
 import classNames from "classnames/bind";
 import FileBase from "react-file-base64";
 import { generateUUID2 } from "../../../../utils/GenerateldUIID/GenerateldUIID";
+import ModalEdit from "../ModalEdit/ModalEdit";
+import PaginationPageProduct from "../PaginationPageProduct/Pagination";
 const cx = classNames.bind(styles);
 
 const ProductManagement: React.FC = () => {
@@ -31,9 +36,14 @@ const ProductManagement: React.FC = () => {
   const [imgProduct, setImgProduct] = useState<any>(null);
   const [error, setError] = useState<any>("");
   const [showModal, setShowModal] = useState(false);
+  const [dataDetial, setDataDetial] = useState<any>(null);
   const [size, setSize] = useState<any>([]);
   const [selectColor, setSelectColor] = useState<any>([]);
   const [valueManufacturer, setValueManufacturer] = useState<any>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [Card, setCard] = useState<any>([]);
+  const limit = 5;
   const handleAddImage = (files: { base64: string }) => {
     if (!isValidBase64Image(files.base64)) {
       setError("File bạn chọn không phải là hình ảnh hợp lệ.");
@@ -56,15 +66,21 @@ const ProductManagement: React.FC = () => {
     await dispatch(fetchCartProductAPI());
     setImgProduct(null);
   };
-  const { card, cartImg, status, color, country, productOptions } = useSelector(
-    (state: RootState) => state.cartProductState
-  );
+  const {
+    card,
+    cartImg,
+    status,
+    color,
+    country,
+    productOptions,
+    ShowModalEdit,
+  } = useSelector((state: RootState) => state.cartProductState);
   const onModalOpen = () => {
     setIsModalOpen(true);
   };
   console.log(card, "data");
   console.log(cartImg, "cartImg");
-  const data = card.map((item: any) => {
+  const data = Card.map((item: any) => {
     const item1 = cartImg?.find((item2: any) => item2?.id === item?.id);
     return item1 ? { ...item, ...item1 } : item;
   });
@@ -112,6 +128,11 @@ const ProductManagement: React.FC = () => {
     await dispatch(fetchDeleteCart(productId));
     await dispatch(fetchDeleteImgCart(productId));
     await dispatch(fetchCartProductAPI());
+  };
+
+  const handleEdit = (id: any) => {
+    dispatch(setShowModalEdit(true));
+    localStorage.setItem("productIdEdit", id);
   };
   const handleAddFrame = (e: any) => {
     e.preventDefault();
@@ -165,10 +186,23 @@ const ProductManagement: React.FC = () => {
     updateSize.splice(index, 1);
     setValueManufacturer(updateSize);
   };
+  const showModalDetail = async (id: any) => {
+    setShowModal(true);
+    const res: any = await dispatch(fetchProductApi(id));
+    setDataDetial(res.payload);
+  };
+  const onPageChange = (page: number) => {
+    setCurrentPage(page);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await dispatch(fetchCartProductAPI());
+        const totalPage: any = await dispatch(fetchCartProductAPI());
+        setTotalPages(totalPage?.payload?.length);
+        const CardPage: any = await dispatch(
+          fetchCartProductAPIPage({ currentPage, limit })
+        );
+        setCard(CardPage?.payload);
         await dispatch(fetchGetImgProduct());
         await dispatch(fetchColor());
         await dispatch(fetchGetCountry());
@@ -178,7 +212,7 @@ const ProductManagement: React.FC = () => {
       }
     };
     fetchData();
-  }, [dispatch, status]);
+  }, [dispatch, status, currentPage]);
   return (
     <div className={cx("data-management")}>
       <span className={cx("data-management-title")}>Quản lý Sản phẩm</span>
@@ -229,11 +263,12 @@ const ProductManagement: React.FC = () => {
           value={formik.values.category}
         >
           <option value="">-- Chọn danh mục --</option>
-          {productOptions?.map((item: any) => (
-            <option key={item.id} value={item.id}>
-              {item.name}
-            </option>
-          ))}
+          {productOptions?.length > 0 &&
+            productOptions?.map((item: any) => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
         </select>
         {formik.touched.category && formik.errors.category ? (
           <div className={cx("error")}>{formik.errors.category}</div>
@@ -566,8 +601,12 @@ const ProductManagement: React.FC = () => {
           <tbody>
             {data?.map((data: any, index: any) => (
               <tr key={index}>
-                <th>{data.id}</th>
-                <th>{data.name}</th>
+                <th>{index + 1}</th>
+                <th>
+                  {data.name.length > 25
+                    ? `${data.name.slice(0, 25)}...`
+                    : data.name}
+                </th>
                 <th>{data.original_price}</th>
                 <th>{data.discounted_price}</th>
                 <th>{data.category}</th>
@@ -580,94 +619,13 @@ const ProductManagement: React.FC = () => {
                 </th>
 
                 <th>
-                  <button onClick={() => setShowModal(true)}>
+                  <button
+                    onClick={() => {
+                      showModalDetail(data.id);
+                    }}
+                  >
                     Xem chi tiết
                   </button>
-                  {showModal && (
-                    <div className={cx("modal-show-description")}>
-                      <div className={cx("modal-content-show-description")}>
-                        <button
-                          className={cx("close-modal")}
-                          onClick={() => setShowModal(false)}
-                        >
-                          X
-                        </button>
-                        <h2>Thông tin chi tiết</h2>
-                        <table>
-                          <tbody>
-                            <tr>
-                              <th>Color</th>
-                              <td>
-                                {data?.color.map((color: any) => {
-                                  return (
-                                    <span
-                                      style={{
-                                        marginRight: "10px",
-                                        backgroundColor: color,
-                                      }}
-                                    >
-                                      {color}
-                                    </span>
-                                  );
-                                })}
-                              </td>
-                            </tr>
-                            <tr>
-                              <th>xuất xứ</th>
-                              <td>{data.country}</td>
-                            </tr>
-                            <tr>
-                              <th>size</th>
-                              <td>
-                                {data?.size.map((size: any) => {
-                                  return (
-                                    <span
-                                      style={{
-                                        marginRight: "10px",
-                                      }}
-                                    >
-                                      {size}
-                                    </span>
-                                  );
-                                })}
-                              </td>
-                            </tr>
-                            <tr>
-                              <th>Phụ kiện đi kèm</th>
-                              <td>{data.accessories}</td>
-                            </tr>
-                            <tr>
-                              <th>Thương hiệu</th>
-                              <td>{data.brandName}</td>
-                            </tr>
-                            <tr>
-                              <th>Mô tả thương hiệu</th>
-                              <td>{data.brandDescription}</td>
-                            </tr>
-                            <tr>
-                              <th>Nhà sản xuất</th>
-                              <td>{data.manufacturerName}</td>
-                            </tr>
-                            <tr>
-                              <th>Thông tin nhà sản xuất</th>
-                              <td>{data.manufacturerInfo}</td>
-                            </tr>
-                            <tr>
-                              <th>Thống tin mô tả san phẩm</th>
-                              <td>
-                                {data?.manufacturerProducts.map((item: any) => {
-                                  return <p>{item}</p>;
-                                })}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <button onClick={() => setShowModal(false)}>
-                          Xác nhận
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </th>
 
                 <th>
@@ -676,13 +634,122 @@ const ProductManagement: React.FC = () => {
                   </Button>
                 </th>
                 <th>
-                  <Button color="primary">Cập nhật</Button>
+                  <Button color="primary" onClick={() => handleEdit(data.id)}>
+                    Chỉnh sửa
+                  </Button>
                 </th>
               </tr>
             ))}
+            {showModal && (
+              <div className={cx("modal-show-description")}>
+                <div className={cx("modal-content-show-description")}>
+                  <button
+                    className={cx("close-modal")}
+                    onClick={() => setShowModal(false)}
+                  >
+                    X
+                  </button>
+                  <h2>Thông tin chi tiết</h2>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <th>Color</th>
+                        <td>
+                          {dataDetial?.color &&
+                            dataDetial?.color.map((color: any) => {
+                              return (
+                                <span
+                                  style={{
+                                    marginRight: "10px",
+                                    backgroundColor: color,
+                                  }}
+                                >
+                                  {color}
+                                </span>
+                              );
+                            })}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>xuất xứ</th>
+                        <td>{dataDetial?.country}</td>
+                      </tr>
+                      <tr>
+                        <th>size</th>
+                        <td>
+                          {dataDetial?.size &&
+                            dataDetial?.size.map((size: any) => {
+                              return (
+                                <span
+                                  style={{
+                                    marginRight: "10px",
+                                  }}
+                                >
+                                  {size}
+                                </span>
+                              );
+                            })}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Phụ kiện đi kèm</th>
+                        <td>{dataDetial?.accessories}</td>
+                      </tr>
+                      <tr>
+                        <th>Thương hiệu</th>
+                        <td>{dataDetial?.brandName}</td>
+                      </tr>
+                      <tr>
+                        <th>Mô tả thương hiệu</th>
+                        <td>{dataDetial?.brandDescription}</td>
+                      </tr>
+                      <tr>
+                        <th>Nhà sản xuất</th>
+                        <td>{dataDetial?.manufacturerName}</td>
+                      </tr>
+                      <tr>
+                        <th>Thông tin nhà sản xuất</th>
+                        <td>{dataDetial?.manufacturerInfo}</td>
+                      </tr>
+                      <tr>
+                        <th>Thống tin mô tả sản phẩm</th>
+                        <td>
+                          {dataDetial?.manufacturerProducts &&
+                            dataDetial?.manufacturerProducts.map(
+                              (item: any) => {
+                                return <p>{item}</p>;
+                              }
+                            )}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <button onClick={() => setShowModal(false)}>Xác nhận</button>
+                </div>
+              </div>
+            )}
           </tbody>
         </table>
       </div>
+      <div style={{ width: "100%" }}>
+        <div
+          style={{
+            width: "100%",
+          }}
+        >
+          <PaginationPageProduct
+            onPageChange={onPageChange}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            limit={limit}
+          />
+        </div>
+      </div>
+      {ShowModalEdit && (
+        <>
+          <ModalEdit />
+        </>
+      )}
     </div>
   );
 };

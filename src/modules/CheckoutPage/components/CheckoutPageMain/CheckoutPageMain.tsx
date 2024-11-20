@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./CheckoutPageMain.module.scss";
@@ -8,35 +8,36 @@ import { useFormik } from "formik";
 import GenerateIdWithDate from "../../../../utils/GenerateIdWithDate/GenerateIdWithDate";
 import { useNavigate } from "react-router-dom";
 import { fetchCreateOrder } from "../../../../store/slices/CartOderSlice";
-// import { fetchCreateOrder } from "../../../../store/slices/CartOderSlice";
+import {
+  fetchColor,
+  fetchGetImgProduct,
+} from "../../../../store/slices/CartProductSlice";
+import { fetchGetUserProduct } from "../../../../store/slices/UserProductSlice";
 
 const cx = classNames.bind(styles);
 
 const CheckoutPageMain = () => {
+  const userId: any = JSON.parse(localStorage.getItem("user") || "{}");
+  const [colors, setColors] = useState<any>([]);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   let result = 0;
-  const dispatch = useDispatch();
   const { userProducts } = useSelector(
     (state: RootState) => state.userProductState
   );
-  const { idUserProduct }: any = useSelector(
-    (state: RootState) => state.UserLoginState
-  );
-  console.log(idUserProduct, "idUserProduct");
-
-  const { userRender }: any = useSelector(
-    (state: RootState) => state.userState
-  );
+  const { cartImg } = useSelector((state: RootState) => state.cartProductState);
+  console.log(cartImg, "cartImg");
   for (let i = 0; i < userProducts.length; i++) {
-    result += userProducts[i].product.price * userProducts[i].quantity;
+    result +=
+      userProducts[i].product.discounted_price * userProducts[i].quantity;
   }
   console.log(userProducts, "userProducts");
   const formik = useFormik({
     initialValues: {
-      name: idUserProduct[0].myname,
-      address: userRender.address,
-      phone: userRender.phone,
+      name: userId?.username,
+      address: userId?.address,
+      phone: userId?.phone,
       paymentMethod: "cash",
     },
     validationSchema: Yup.object().shape({
@@ -74,33 +75,66 @@ const CheckoutPageMain = () => {
   let id = useMemo(() => GenerateIdWithDate(), []);
 
   useEffect(() => {
-    if (userProducts.length === 0) {
+    const fetchData = async () => {
+      try {
+        await dispatch(fetchGetUserProduct(userId.id));
+        await dispatch(fetchGetImgProduct());
+        const res: any = await dispatch(fetchColor());
+        setColors(res?.payload);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (data.length === 0) {
       alert("Giỏ hàng của bạn đang trống");
     }
-  }, [userProducts]);
-
+    fetchData();
+  }, []);
+  const data = userProducts.map((item: any) => {
+    const item2 = cartImg.find((item1: any) => item1.id === item.product.id);
+    return item2 ? { ...item, ...item2 } : item;
+  });
+  console.log(data, "data");
   return (
     <div className={cx("checkoutPage")}>
       <h2>Trang Thanh Toán</h2>
       <div className={cx("checkoutForm")}>
         <div className={cx("cartDetails")}>
           <h3>Thông tin giỏ hàng</h3>
-          {userProducts.length > 0 ? (
+          {data && data?.length > 0 ? (
             <div className={cx("cartItems")}>
-              {userProducts.map((item: any) => (
-                <div key={item.product.id} className={cx("cartItem")}>
-                  <img
-                    src={item.product.image}
-                    alt={item.product.name}
-                    className={cx("productImage")}
-                  />
-                  <div className={cx("productInfo")}>
-                    <h3>{item.product.name}</h3>
-                    <p>Số lượng: {item.quantity}</p>
-                    <p>{item.product.price} VND</p>
+              {data.map((item: any) => {
+                console.log(
+                  item,
+                  "item............................................."
+                );
+                const colorFind = colors.find(
+                  (item2: any) => item2?.hex === item?.color
+                );
+                console.log(colorFind, "colorFind");
+                const discounted_price = item?.product?.discounted_price;
+                return (
+                  <div key={item?.product.id} className={cx("cartItem")}>
+                    <img
+                      src={item?.img}
+                      alt={item?.product.name}
+                      className={cx("productImage")}
+                      style={{ width: "100px", height: "100px" }}
+                    />
+                    <div className={cx("productInfo")}>
+                      <h3>{item.product.name}</h3>
+                      {item.size && item.size !== 0 ? (
+                        <p>Size: {item.size}</p>
+                      ) : null}
+                      {item.color && item.color !== 0 ? (
+                        <p>Màu sắc: {colorFind?.name}</p>
+                      ) : null}
+                      <p>Số lượng: {item.quantity}</p>
+                      <p>{Number(discounted_price).toLocaleString()} VND</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <p>Giỏ hàng trống.</p>
@@ -109,7 +143,7 @@ const CheckoutPageMain = () => {
 
         <div className={cx("totalAmount")}>
           <h3>Tổng tiền</h3>
-          <p>{result} VND</p>
+          <p>{result.toLocaleString()} VND</p>
         </div>
 
         <form className={cx("userInfo")} onSubmit={formik.handleSubmit}>

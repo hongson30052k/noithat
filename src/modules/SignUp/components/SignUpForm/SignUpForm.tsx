@@ -42,8 +42,7 @@ const SignUpForm = () => {
       password: values.password,
       isAdmin: false,
     };
-    dispatch(fetchCreateUser(value));
-    navigate("/userLogin");
+    navigate("/userLogin", { state: value });
   };
 
   return (
@@ -83,7 +82,7 @@ const SignUpForm = () => {
                   fontSize: "20px",
                   lineHeight: "17px",
                   color: "#131118",
-                  mt: 2
+                  mt: 2,
                 }}
               >
                 Username
@@ -114,7 +113,7 @@ const SignUpForm = () => {
                     },
                   },
                   formHelperText: {
-                    style: { fontSize: "16px", },
+                    style: { fontSize: "16px" },
                   },
                 }}
               />
@@ -158,7 +157,7 @@ const SignUpForm = () => {
                     },
                   },
                   formHelperText: {
-                    style: { fontSize: "16px"},
+                    style: { fontSize: "16px" },
                   },
                 }}
               />
@@ -202,7 +201,7 @@ const SignUpForm = () => {
                     },
                   },
                   formHelperText: {
-                    style: { fontSize: "16px"},
+                    style: { fontSize: "16px" },
                   },
                 }}
               />
@@ -248,7 +247,7 @@ const SignUpForm = () => {
                     },
                   },
                   formHelperText: {
-                    style: { fontSize: "16px",},
+                    style: { fontSize: "16px" },
                   },
                 }}
               />
@@ -318,7 +317,10 @@ const SignUpForm = () => {
               </Button>
 
               <div className={cx("register")}>
-                Already have an account?<NavLink to="/login" className={cx("register-link")}>Login</NavLink>
+                Already have an account?
+                <NavLink to="/login" className={cx("register-link")}>
+                  Login
+                </NavLink>
               </div>
             </form>
           )}

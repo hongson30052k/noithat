@@ -6,13 +6,16 @@ import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 import { fetchCreateUserLogin } from "../../../../store/slices/UserLoginSlice";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { fetchCreateUser } from "../../../../store/slices/UserSlice";
 
 const cx = classNames.bind(styles);
 
 const UserLoginForm: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const Location = useLocation();
+  const userData = Location?.state;
   const [imageData, setImageData] = useState<string | null>(null);
 
   const handleFileUpload = (file: { base64: string }) => {
@@ -28,6 +31,7 @@ const UserLoginForm: React.FC = () => {
       myname: Yup.string().required("Vui lòng nhập tên người dùng"),
     }),
     onSubmit: async (values) => {
+      await dispatch(fetchCreateUser(userData));
       const value = {
         myname: values.myname,
         img: imageData,

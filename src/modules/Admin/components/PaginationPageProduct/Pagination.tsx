@@ -1,17 +1,12 @@
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
-import { useState } from "react";
 
-export default function PaginationItem({
+export default function PaginationPageProduct({
   currentPage,
   onPageChange,
   totalPages,
   limit,
 }: any) {
-  if (!totalPages) {
-    console.error("totalPage is not defined or is invalid");
-    return null;
-  }
   const pageTotal = Math.ceil(totalPages / limit);
   const handlePageChange = (event: any, value: any) => {
     onPageChange(value);

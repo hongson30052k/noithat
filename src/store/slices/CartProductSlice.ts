@@ -1,6 +1,10 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  current,
+  PayloadAction,
+} from "@reduxjs/toolkit";
 import { axiosInstance } from "../../api/axiosClient";
-import { axiosInstanceUser } from "../../api/axiosClientUser";
 
 interface IInitialState {
   card: any[];
@@ -12,6 +16,14 @@ interface IInitialState {
   color: any[];
   country: any[];
   productOptions: any[];
+  productOptionId: number;
+  checkedPrice: number;
+  checked: boolean;
+  searchInputValue: string;
+  search: null | string;
+  searchValue: string;
+  ShowModalEdit: boolean;
+  loading: boolean;
 }
 
 const initialState: IInitialState = {
@@ -24,6 +36,14 @@ const initialState: IInitialState = {
   color: [],
   country: [],
   productOptions: [],
+  productOptionId: 0,
+  checkedPrice: 0,
+  checked: false,
+  searchInputValue: "",
+  search: null,
+  searchValue: "",
+  ShowModalEdit: false,
+  loading: false,
 };
 export const fetchCartProductAPI = createAsyncThunk(
   "cartProductSlice/fetchCartProductAPI",
@@ -40,6 +60,52 @@ export const fetchCartProductAPI = createAsyncThunk(
     }
   }
 );
+export const fetchCartProductAPIPage = createAsyncThunk(
+  "cartProductSlice/fetchCartProductAPIPage",
+  async ({ currentPage, limit }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res = await axiosInstance.get(
+        `/products?_page=${currentPage}&_limit=${limit}`
+      );
+      console.log(res, "resproduct");
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchCartProductTotalCategory = createAsyncThunk(
+  "cartProductSlice/fetchCartProductTotalCategory",
+  async ({ productOptionId }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res = await axiosInstance.get(
+        `/products?category=${productOptionId}`
+      );
+      console.log(res, "resproduct");
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchCartProductAPIPageCategory = createAsyncThunk(
+  "cartProductSlice/fetchCartProductAPIPageCategory",
+  async ({ productOptionId, currentPage, limit }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res = await axiosInstance.get(
+        `/products?_page=${currentPage}&_limit=${limit}&category=${productOptionId}`
+      );
+      console.log(res, "resproduct");
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+
 export const fetchColor = createAsyncThunk(
   "userProductSlice/fetchColor",
   async (_, thunkAPI) => {
@@ -52,6 +118,176 @@ export const fetchColor = createAsyncThunk(
     }
   }
 );
+export const fetchGetPriceUnder1000k = createAsyncThunk(
+  "userProductSlice/fetchGetPriceUnder1000k",
+  async (_, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(
+        "/products/sortByPriceUnder1000K"
+      );
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchGetPriceUnder1000kPage = createAsyncThunk(
+  "userProductSlice/fetchGetPriceUnder1000kPage",
+  async ({ currentPage, limit }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(
+        `/products/sortByPriceUnder1000K?_page=${currentPage}&_limit=${limit}`
+      );
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchGetPriceUnder1000kCateGory = createAsyncThunk(
+  "userProductSlice/fetchGetPriceUnder1000kCateGory",
+  async ({ productOptionId, currentPage, limit }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(
+        `/products/sortByPriceUnder1000KPage?_page=${currentPage}&_limit=${limit}&category=${productOptionId}`
+      );
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchGetPriceFrom1mto5m = createAsyncThunk(
+  "userProductSlice/fetchGetPriceFrom1mto5m",
+  async (_, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(
+        "/products/sortByPriceFrom1mto5m"
+      );
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchGetPriceFrom1mto5mPage = createAsyncThunk(
+  "userProductSlice/fetchGetPriceFrom1mto5m",
+  async ({ currentPage, limit }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(
+        `/products/sortByPriceFrom1mto5mPage?_page=${currentPage}&_limit=${limit}`
+      );
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+
+export const fetchGetPriceFrom1mto5mCateGory = createAsyncThunk(
+  "userProductSlice/fetchGetPriceFrom1mto5mCateGory",
+  async ({ productOptionId, currentPage, limit }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(
+        `/products/sortByPriceFrom1mto5mPage?_page=${currentPage}&_limit=${limit}&category=${productOptionId}`
+      );
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchGetPriceOver5m = createAsyncThunk(
+  "userProductSlice/fetchGetPriceOver5m",
+  async (_, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get("/products/sortByPriceOver5m");
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchGetPriceOver5mPage = createAsyncThunk(
+  "userProductSlice/fetchGetPriceOver5mPage",
+  async ({ currentPage, limit }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(
+        `/products/sortByPriceOver5mPage?_page=${currentPage}&_limit=${limit}`
+      );
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+
+export const fetchGetPriceOver5mCategory = createAsyncThunk(
+  "userProductSlice/fetchGetPriceOver5mCategory",
+  async ({ productOptionId, currentPage, limit }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(
+        `/products/sortByPriceOver5mPage?_page=${currentPage}&_limit=${limit}&category=${productOptionId}`
+      );
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchSearchProducts = createAsyncThunk(
+  "userProductSlice/fetchSearchProducts",
+  async ({ searchValue }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(
+        `products?name_like=${searchValue}`
+      );
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchSearchProductsView = createAsyncThunk(
+  "userProductSlice/fetchSearchProductsView",
+  async ({ inputValueCart }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(
+        `products?name_like=${inputValueCart}`
+      );
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+
+export const fetchSearchProductsPage = createAsyncThunk(
+  "userProductSlice/fetchSearchProductsPage",
+  async ({ value, currentPage, limit }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(
+        `products?name_like=${value}&_page=${currentPage}&_limit=${limit}`
+      );
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+
 export const fetchGetImgProduct = createAsyncThunk(
   "userProductSlice/fetchGetImgProduct",
   async (_, thunkAPI) => {
@@ -70,6 +306,18 @@ export const fetchProductOptions = createAsyncThunk(
     const { rejectWithValue } = thunkAPI;
     try {
       const res: any = await axiosInstance.get("/productOptions");
+      return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchProductOptionsId = createAsyncThunk(
+  "userProductSlice/fetchProductOptionsId",
+  async (id: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const res: any = await axiosInstance.get(`/productOptions/${id}`);
       return res;
     } catch (error) {
       rejectWithValue(error);
@@ -115,10 +363,10 @@ export const fetchAddImgProduct = createAsyncThunk(
 
 export const fetchProductApi = createAsyncThunk(
   "cartProductSlice/fetchProductApi",
-  async (id: string, thunkAPI) => {
+  async (id: any, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
-      const res = await axiosInstance.get(
+      const res: any = await axiosInstance.get(
         `http://localhost:5000/products/${id}`,
         {
           baseURL: "/",
@@ -140,6 +388,22 @@ export const fetchAddToCart = createAsyncThunk(
       const res = await axiosInstance.post(`/products`, data);
       console.log(res, "resproduct");
       return res;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+export const fetchEditProduct = createAsyncThunk(
+  "cartProductSlice/fetchEditProduct",
+  async ({ id, value }: any, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+      const resGet: any = await axiosInstance.get(`/products/${id}`);
+      const values = { ...resGet, ...value };
+      console.log(values, "values-----------------1111111111111");
+      console.log(resGet, "resGet");
+      const resPost = await axiosInstance.put(`/products/${id}`, values);
+      return resPost;
     } catch (error) {
       rejectWithValue(error);
     }
@@ -177,8 +441,31 @@ export const cartProductSlice = createSlice({
   name: "cartProductSlice",
   initialState: initialState,
   reducers: {
+    setLoading: (state = initialState, action: PayloadAction<any>) => {
+      state.loading = action.payload;
+    },
+    getIdProductOption: (state = initialState, action: PayloadAction<any>) => {
+      state.productOptionId = action.payload;
+    },
     getProductId: (state = initialState, action: PayloadAction<any>) => {
       state.productId = action.payload;
+    },
+    checkeds: (state = initialState, action: PayloadAction<any>) => {
+      const { isChecked, checked } = action.payload;
+      state.checkedPrice = isChecked;
+      state.checked = checked;
+    },
+    search: (state = initialState, action: PayloadAction<any>) => {
+      state.searchValue = action.payload;
+    },
+    searchInputValue: (state = initialState, action: PayloadAction<any>) => {
+      state.searchInputValue = action.payload;
+    },
+    searchStatus: (state = initialState, action: PayloadAction<any>) => {
+      state.search = action.payload;
+    },
+    setShowModalEdit: (state = initialState, action: PayloadAction<any>) => {
+      state.ShowModalEdit = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -234,6 +521,7 @@ export const cartProductSlice = createSlice({
       fetchAddImgProduct.fulfilled,
       (state, action: PayloadAction<any>) => {
         state.status = !state.status;
+        state.loading = true;
       }
     );
     builder.addCase(fetchAddImgProduct.rejected, (state, action) => {});
@@ -242,6 +530,7 @@ export const cartProductSlice = createSlice({
       fetchGetImgProductId.fulfilled,
       (state, action: PayloadAction<any>) => {
         state.cardImg = action.payload;
+        state.loading = false;
       }
     );
     builder.addCase(fetchGetImgProductId.rejected, (state, action) => {});
@@ -266,8 +555,22 @@ export const cartProductSlice = createSlice({
       state.productOptions = action.payload;
     });
     builder.addCase(fetchProductOptions.rejected, (state, action) => {});
+    builder.addCase(fetchEditProduct.pending, (state, action) => {});
+    builder.addCase(fetchEditProduct.fulfilled, (state, action) => {
+      state.status = !state.status;
+    });
+    builder.addCase(fetchEditProduct.rejected, (state, action) => {});
   },
 });
 
-export const { getProductId } = cartProductSlice.actions;
+export const {
+  getProductId,
+  getIdProductOption,
+  checkeds,
+  search,
+  searchInputValue,
+  searchStatus,
+  setShowModalEdit,
+  setLoading,
+} = cartProductSlice.actions;
 export default cartProductSlice.reducer;

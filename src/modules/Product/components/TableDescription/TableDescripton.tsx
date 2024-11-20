@@ -11,83 +11,65 @@ import styles from "./TableDescription.module.scss";
 import classNames from "classnames/bind";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../store/store";
-import { useEffect } from "react";
-import { fetchProductApi } from "../../../../store/slices/CartProductSlice";
+import { useEffect, useState } from "react";
+import {
+  fetchProductApi,
+  fetchProductOptionsId,
+} from "../../../../store/slices/CartProductSlice";
 const cx = classNames.bind(styles);
 
 const TableDescription = () => {
+  const categoryId = localStorage.getItem("categoryId");
+  const id = localStorage.getItem("productId");
+  const [categoryName, setCategoryName] = useState("");
   const dispatch = useDispatch();
-  const id = useSelector(
-    (state: RootState) => state.cartProductState.productId
-  );
-  useEffect(() => {
-    dispatch(fetchProductApi(id));
-  }, []);
   const cartId: any = useSelector(
     (state: RootState) => state.cartProductState.cardId
   );
-  console.log(cartId);
+  localStorage.setItem("categoryId", cartId?.category);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await dispatch(fetchProductApi(id));
+        const res: any = await dispatch(fetchProductOptionsId(categoryId));
+        setCategoryName(res?.payload?.name);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [dispatch, id]);
+  console.log(cartId, "cartId");
   return (
-    <>
-      <TableContainer component={Paper} className={cx("table-container")}>
-        <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-          <TableBody>
-            {cartId && (
-              <>
-                <TableRow>
-                  <TableCell sx={{ fontSize: "18px", fontWeight: "bold" }}>
-                    Khung lưng
-                  </TableCell>
-                  <TableCell sx={{ fontSize: "18px" }}>
-                    {cartId.frame}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell sx={{ fontSize: "18px", fontWeight: "bold" }}>
-                    Tựa tay
-                  </TableCell>
-                  <TableCell sx={{ fontSize: "18px" }}>
-                    {cartId.armrest}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell sx={{ fontSize: "18px", fontWeight: "bold" }}>
-                    Mâm ghế
-                  </TableCell>
-                  <TableCell sx={{ fontSize: "18px" }}>
-                    {cartId.seatPlate}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell sx={{ fontSize: "18px", fontWeight: "bold" }}>
-                    Position
-                  </TableCell>
-                  <TableCell sx={{ fontSize: "18px" }}>
-                    {cartId.hydraulic}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell sx={{ fontSize: "18px", fontWeight: "bold" }}>
-                    Khung chân
-                  </TableCell>
-                  <TableCell sx={{ fontSize: "18px" }}>
-                    {cartId.chairLeg}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell sx={{ fontSize: "18px", fontWeight: "bold" }}>
-                    Bánh xe
-                  </TableCell>
-                  <TableCell sx={{ fontSize: "18px" }}>
-                    {cartId.wheels}
-                  </TableCell>
-                </TableRow>
-              </>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
+    <div className={cx("product-info-container")}>
+      <div className={cx("info-item")}>
+        <strong className={cx("label")}>Xuất xứ:</strong>
+        <span className={cx("value")}>{cartId?.country}</span>
+      </div>
+      <div className={cx("info-item")}>
+        <strong className={cx("label")}>Loại sản phẩm:</strong>
+        <span className={cx("value")}>{categoryName}</span>
+      </div>
+      <div className={cx("info-item")}>
+        <strong className={cx("label")}>Nhà sản xuất:</strong>
+        <span className={cx("value")}>{cartId?.manufacturerName}</span>
+      </div>
+      <div className={cx("info-item")}>
+        <strong className={cx("label")}>Thông tin nhà sản xuất:</strong>
+        <span className={cx("value")}>{cartId?.manufacturerInfo}</span>
+      </div>
+      <div className={cx("info-item")}>
+        <strong className={cx("label")}>Thông tin mô tả sản phẩm:</strong>
+        <div className={cx("product-description")}>
+          {cartId?.manufacturerProducts &&
+            cartId?.manufacturerProducts.map((item: any) => (
+              <div key={item} className={cx("product-description-item")}>
+                {item}
+              </div>
+            ))}
+        </div>
+      </div>
+    </div>
   );
 };
 

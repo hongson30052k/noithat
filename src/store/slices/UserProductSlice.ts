@@ -62,7 +62,6 @@ export const fetchGetUserProduct = createAsyncThunk(
       const res: any = await axiosInstance.get(
         `/cart?_expand=product&userId=${idUser}`
       );
-
       return res;
     } catch (error) {
       rejectWithValue(error);
@@ -115,9 +114,12 @@ export const fetchDeleteProduct = createAsyncThunk(
     console.log(id, "id");
     try {
       const idForUser: any = await axiosInstance.get(`/cart`);
-      const exist = idForUser.find((item: any) => item.id === id);
-      const response: any = await axiosInstance.delete(`/cart/${exist.id}`);
-      return id;
+      const exist = idForUser.find((item: any) => item.productId === id);
+      console.log(exist, "exist");
+      const response: any = await axiosInstance.delete(
+        `/cart?productId=${exist.productId}`
+      );
+      return response;
     } catch (error) {
       rejectWithValue(error);
     }
@@ -140,7 +142,11 @@ export const fetchDeleteUserProduct = createAsyncThunk(
 export const userProductSlice = createSlice({
   name: "userProductSlice",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    setLoadings: (state, action) => {
+      state.loading = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchCreateProductId.pending, (state) => {
       state.loading = true;
@@ -186,4 +192,5 @@ export const userProductSlice = createSlice({
   },
 });
 
+export const { setLoadings } = userProductSlice.actions;
 export default userProductSlice.reducer;

@@ -11,17 +11,25 @@ import {
 import styles from "./Card.module.scss";
 import classNames from "classnames/bind";
 import { fetchCreateProductId } from "../../store/slices/UserProductSlice";
-import { useEffect } from "react";
-import { RootState } from "../../store/store";
 import { calculateDiscountPercentage } from "../../utils/calculateDiscountPercentage/calculateDiscountPercentage";
 
 const cx = classNames.bind(styles);
 
 const Card = ({ data }: any) => {
-  console.log(data, "datas");
+  const user: any = JSON.parse(localStorage.getItem("user") || "{}");
+  const { isAuthenticated } = useSelector((state: any) => state.userState);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const onAddToCart = async (id: any) => {
+    if (user.isAdmin && isAuthenticated) {
+      alert("bạn là tài khoản admin không thể thêm sản phẩm vào giỏ hàng");
+      return;
+    } else if (!user.isAdmin && isAuthenticated) {
+    } else if (!isAuthenticated) {
+      alert("bạn chưa đăng nhập vui lòng đăng nhập");
+      return;
+    }
     const res: any = await dispatch(fetchCreateProductId(id));
     const result = res.payload;
     if (typeof result === "string") {
@@ -34,6 +42,10 @@ const Card = ({ data }: any) => {
     dispatch(getProductId(id));
     localStorage.setItem("productId", id);
   };
+  const discounted_price = Number(data.discounted_price);
+  const original_price = Number(data.original_price);
+  const formatDiscountPrice = discounted_price?.toLocaleString();
+  const formatOriginalPrice = original_price?.toLocaleString();
   return (
     <>
       {data && (
@@ -41,10 +53,9 @@ const Card = ({ data }: any) => {
           {data.discounted_price > 0 && (
             <div className={cx("card-percent-discount")}>
               <span className={cx("text-percent-discount")}>
-                -
                 {calculateDiscountPercentage(
-                  data.original_price,
-                  data.discounted_price
+                  data.discounted_price,
+                  data.original_price
                 )}
                 %
               </span>
@@ -61,9 +72,11 @@ const Card = ({ data }: any) => {
             <span className={cx("card-title")}>{data.name}</span>
             <span className={cx("card-text")}>{data.description}</span>
             <div className={cx("card-price-container")}>
-              <span className={cx("card-price")}>{data.discounted_price}</span>
+              <span className={cx("card-price")}>
+                {formatDiscountPrice} vnđ
+              </span>
               <span className={cx("card-price-discount")}>
-                {data.original_price}
+                {formatOriginalPrice} vnđ
               </span>
             </div>
           </div>

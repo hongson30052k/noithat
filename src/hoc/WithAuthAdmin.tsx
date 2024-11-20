@@ -1,22 +1,20 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { RootState } from "../store/store";
 
 const WithAuthAdmin = (WrappedComponent: React.FC) => {
   const AuthHOC: React.FC<any> = (props) => {
     const navigate = useNavigate();
-    const { isAdmin } = useSelector((state: RootState) => state.userState);
-
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
     useEffect(() => {
-      if (!isAdmin) {
-        navigate("/");
-      } else {
+      if (user.isAdmin) {
         navigate("/admin");
+      } else {
+        alert("Trang này dành cho Admin! bạn không có quyền truy cập");
+        navigate("/");
       }
-    }, [isAdmin, navigate]);
+    }, [user.isAdmin]);
 
-    return isAdmin ? <WrappedComponent {...props} /> : null;
+    return user.isAdmin ? <WrappedComponent {...props} /> : null;
   };
 
   return AuthHOC;

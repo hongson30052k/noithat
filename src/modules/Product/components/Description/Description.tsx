@@ -22,6 +22,11 @@ const Description = () => {
                 <div
                   className={cx("menu")}
                   key={index}
+                  style={
+                    activeIndex === index
+                      ? { backgroundColor: "#1abc9c", color: "white" }
+                      : {}
+                  }
                   onClick={() => onClickMenu(index)}
                 >
                   {item.name}
