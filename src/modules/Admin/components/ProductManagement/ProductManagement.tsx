@@ -232,7 +232,7 @@ const ProductManagement: React.FC = () => {
         ) : null}
         <label htmlFor="original_price">Giá sản phẩm</label>
         <input
-          type="number"
+          type="text"
           id="original_price"
           name="original_price"
           onChange={formik.handleChange}
@@ -599,47 +599,54 @@ const ProductManagement: React.FC = () => {
             <th>Thông tin chi tiết</th>
           </thead>
           <tbody>
-            {data?.map((data: any, index: any) => (
-              <tr key={index}>
-                <th>{index + 1}</th>
-                <th>
-                  {data.name.length > 25
-                    ? `${data.name.slice(0, 25)}...`
-                    : data.name}
-                </th>
-                <th>{data.original_price}</th>
-                <th>{data.discounted_price}</th>
-                <th>{data.category}</th>
-                <th>
-                  <img
-                    src={data.img}
-                    alt={data.name}
-                    style={{ width: "50px", height: "50px" }}
-                  />
-                </th>
-
-                <th>
-                  <button
-                    onClick={() => {
-                      showModalDetail(data.id);
-                    }}
-                  >
-                    Xem chi tiết
-                  </button>
-                </th>
-
-                <th>
-                  <Button color="secondary" onClick={() => handDelete(data.id)}>
-                    Xóa
-                  </Button>
-                </th>
-                <th>
-                  <Button color="primary" onClick={() => handleEdit(data.id)}>
-                    Chỉnh sửa
-                  </Button>
-                </th>
-              </tr>
-            ))}
+            {data?.map((data: any, index: any) => {
+              const discountedPrice = Number(data.discounted_price);
+              const originalPrice = Number(data.original_price);
+              const formatDiscountedPrice = discountedPrice.toLocaleString();
+              const formatOriginalPrice = originalPrice.toLocaleString();
+              return (
+              
+                <tr key={index}>
+                  <th>{index + 1}</th>
+                  <th>
+                    {data.name.length > 25
+                      ? `${data.name.slice(0, 25)}...`
+                      : data.name}
+                  </th>
+                  <th>{formatOriginalPrice} VNĐ</th>
+                  <th>{formatDiscountedPrice} VNĐ</th>
+                  <th>{data.category}</th>
+                  <th>
+                    <img
+                      src={data.img}
+                      alt={data.name}
+                      style={{ width: "50px", height: "50px" }}
+                    />
+                  </th>
+  
+                  <th>
+                    <button
+                      onClick={() => {
+                        showModalDetail(data.id);
+                      }}
+                    >
+                      Xem chi tiết
+                    </button>
+                  </th>
+  
+                  <th>
+                    <Button color="secondary" onClick={() => handDelete(data.id)}>
+                      Xóa
+                    </Button>
+                  </th>
+                  <th>
+                    <Button color="primary" onClick={() => handleEdit(data.id)}>
+                      Chỉnh sửa
+                    </Button>
+                  </th>
+                </tr>
+              )
+            })}
             {showModal && (
               <div className={cx("modal-show-description")}>
                 <div className={cx("modal-content-show-description")}>

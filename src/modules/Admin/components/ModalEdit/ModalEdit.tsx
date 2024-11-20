@@ -11,6 +11,7 @@ import {
   setShowModalEdit,
 } from "../../../../store/slices/CartProductSlice";
 import FileBase from "react-file-base64";
+import { Dialog } from "@mui/material";
 const cx = classNames.bind(styles);
 
 const ModalEdit: React.FC = () => {
@@ -80,7 +81,12 @@ const ModalEdit: React.FC = () => {
     fetchData();
   }, []);
 
+  const handleClose = () => {
+    dispatch(setShowModalEdit(false));
+  };
+
   return (
+    <Dialog onClose={handleClose} open>
     <div className={cx("form-container")}>
       <h2>Chỉnh Sửa Thông Tin Sản Phẩm</h2>
       <form className={cx("form-group")} onSubmit={formik.handleSubmit}>
@@ -147,6 +153,7 @@ const ModalEdit: React.FC = () => {
         </div>
       </form>
     </div>
+    </Dialog>
   );
 };
 
