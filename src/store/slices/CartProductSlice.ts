@@ -50,9 +50,7 @@ export const fetchCartProductAPI = createAsyncThunk(
   async (_, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
-      const res = await axiosInstance.get("http://localhost:5000/products", {
-        baseURL: "/",
-      });
+      const res = await axiosInstance.get("/products");
       console.log(res, "resproduct");
       return res;
     } catch (error) {
@@ -366,12 +364,7 @@ export const fetchProductApi = createAsyncThunk(
   async (id: any, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
-      const res: any = await axiosInstance.get(
-        `http://localhost:5000/products/${id}`,
-        {
-          baseURL: "/",
-        }
-      );
+      const res: any = await axiosInstance.get(`/products/${id}`);
       console.log(res, "res");
       return res;
     } catch (error) {
@@ -503,7 +496,9 @@ export const cartProductSlice = createSlice({
     builder.addCase(fetchDeleteCart.pending, (state, action) => {});
     builder.addCase(
       fetchDeleteCart.fulfilled,
-      (state, action: PayloadAction<any>) => {}
+      (state, action: PayloadAction<any>) => {
+        state.status = !state.status;
+      }
     );
     builder.addCase(fetchDeleteCart.rejected, (state, action) => {});
 
